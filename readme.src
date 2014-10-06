@@ -1,0 +1,358 @@
+þtitle ISOFS V1.0.3 Readme
+
+þif text
+þh= Table of Contents
+þtoc
+þendif
+
+
+þh1 Introduction
+
+  ISOFS is an installable filesystem for OS/2 for seamless read only access
+  to the contents of ISO image files, as suitable for burning on CD, or as
+  extracted from CD.
+
+  This file system is based on the sources of AEFS a cryptographic
+  file system written by Eelco Dolstra. See Credits below for further
+  information.
+
+
+þh2 Installation
+
+  The suggested method is to use WarpIN, which will modify your CONFIG.SYS
+  file and create a folder on your desktop containing objects for the
+  documentation and the drive mapping utilities.
+
+  To install manually, add the following lines to your CONFIG.SYS file
+  and then reboot.
+
+þexample
+  IFS=<install-path>\stubfsd.ifs ISOFS
+  RUN=<install-path>\isofsdmn.exe
+þendexample
+
+  The first line loads the FSD (file system driver), which is really a
+  stub that passes requests to the daemon, which is started in the
+  second line and does the real work.
+
+
+þh2 Uninstallation
+
+  The suggested method is to use WarpIN, which will remove the entries
+  added during installation from your CONFIG.SYS file and will also
+  remove the ISOFS folder from your desktop.
+
+  To uninstall manually, remove the following lines from your CONFIG.SYS
+  file and then reboot.
+
+þexample
+  IFS=<install-path>\stubfsd.ifs ISOFS
+  RUN=<install-path>\isofsdmn.exe
+þendexample
+
+
+þh2 Overview
+
+  To access an ISO file as a volume, you must attach (map) it to a drive
+  letter. This can be done as follows:
+
+þexample
+  mapiso X: <drive>:\<path>\<filename>
+þendexample
+
+  The file 'filename' may be accessed now as drive X:.þbreak
+  You can copy, extract or view files contained in the image as if they
+  were on your hard disk.
+
+  When you have finished using the volume:
+
+þexample
+  mapiso X: -d
+þendexample
+
+  to detach it.
+
+  If you are using the WPS, you should just be open to double click on the
+  ISO file to attach it to the first free drive letter, and double click
+  again to detach it.
+
+
+þh1 Command reference
+
+  All programs use the GNU getopt syntax. They all support the following
+  options:
+
+þdescription
+
+þitem þsy{-h, --help}
+
+  Print help and exit.
+
+þitem þsy{-v, --version}
+ 
+  Print version information and exit.
+
+þenddescription
+
+
+þh2 isofsdmn
+
+  The þtt{isofsdmn} program is the file system daemon. The syntax is:
+
+  þsy{isofsdmn <option>*}
+
+  It is typically started in þtt{CONFIG.SYS} by a þtt{RUN} statement
+  (þem{not} a þtt{CALL} statement) or from a script using the
+  þtt{detach} command.
+
+  The options are:
+
+þdescription
+
+þitem þsy{-q, --quit}
+
+  Kills the running daemon process. This will also detach any mapped
+  drives from their related ISO files.
+
+þitem þsy{--logfile <filename>}
+
+  Write log messages to the file specified by þsy{<filename>}. By
+  default, messages are written to standard error (which is the nul
+  device if the daemon is started from þtt{CONFIG.SYS} or using
+  þtt{detach}).
+
+þitem þsy{--loglevel <n>}
+
+  Set the severity threshold of log messages. Only messages with a
+  severity lower than or equal to the log level are actually written
+  to the log file. The levels are:
+
+þdescription
+þitem 1
+  Fatal
+þitem 2
+  Evil (i.e. not fatal but worse than a 'normal' error)
+þitem 3
+  Error
+þitem 4
+  Warning
+þitem 7
+  Information
+þitem 9
+  Debug
+þenddescription
+
+þenddescription
+
+
+þh2 mapiso
+
+  The þtt{mapiso} program attaches an ISO file to a drive letter.
+  The syntax is:
+
+  þsy{mapiso <option>* <drive-letter>: <path>}
+
+  The options are:
+
+þdescription
+
+þitem þsy{-o <nnnn>, --offset <nnnn>}
+
+  Specify the offset of the session on the CD. This means the
+  sector where the session starts on the CD. For the first session
+  on a CD the offset is 0, and may be omitted.
+  This option is experimental.
+
+þitem þsy{-j <codepage>, --jcharset <codepage>}
+
+  Translation codepage for the unicode names of Joliet CDs. If this
+  switch is omitted the default system codepage is used.
+
+þenddescription
+
+  The þtt{mapiso} program is also used to detach a drive letter from an
+  ISO file. The syntax is:
+
+þdescription
+þitem þsy{mapiso <option>* <drive-letter>: -d}
+þitem þsy{mapiso <option>* <drive-letter>: --detach}
+þenddescription
+
+  The options are:
+
+þdescription
+
+þitem þsy{-f, --force}
+
+  Detach the file system even if there are open files, active
+  searches, or current directories for this drive. This might not be
+  entirely safe.
+
+þenddescription
+
+  Examples:
+
+þdescription
+
+þitem Map a file on drive X: using codepage 850:
+
+þexample
+  mapiso --jcharset cp850 X: c:\directory\isoimage.raw
+þendexample
+
+þitem Map another file on drive Y: using the default system codepage:
+
+þexample
+  mapiso y: c:\directory\another_isoimage.raw 
+þendexample
+
+þitem Mount the same file on drive Z: using codepage 850:
+
+þexample
+  mapiso -j cp850 z: c:\directory\another_isoimage.raw
+þendexample
+
+þitem Mount CD-ROM drive S: on drive Z: using codepage 850:
+
+þexample
+  mapiso -j cp850 z: \\.\S:
+þendexample
+
+þenddescription
+
+  You may access all these mounted drives in parallel.
+
+
+þh1 Known problems and limitations
+
+þitemize
+
+þitem
+
+  Although ISO files can now exceed 2GB, individual files within are still
+  limited to 2GB. This may change in the future.
+
+þitem
+
+  Only single session images are supported. This may also change in the future.
+
+þitem
+
+  There is no caching or read ahead implemented, so the file system isn't
+  as fast as theoretically possible, but I think it's reasonably fast.
+
+þenditemize
+
+
+þh1 Building ISOFS
+
+  The makefiles require GNU make.
+
+  To build the FSD (þtt{stubfsd.ifs}) you need Microsoft C 6.00.þbreak
+  You also need the FSD helper library and header file, which are
+  included in the FSD toolkit:
+  þtt{ftp://ftp.leo.org/pub/comp/os/os2/leo/devtools/doc/ifsinf.zip}.
+
+  To build the daemon and the support programs you need gcc or pgcc,
+  available from various locations.
+
+  In general it isn't absolutely necessary to rebuild the FSD. In fact
+  I took the precompiled FSD from the AEFS package and rewrote only
+  the daemon.
+
+
+þh1 License
+
+  ISOFS is free software; you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
+
+  ISOFS is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+  or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+  License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with ISOFS; see the file COPYING. If not, write to the Free
+  Software Foundation, 59 Temple Place - Suite 330, Boston, MA
+  02111-1307, USA.
+
+
+þh1 History
+
+þdescription
+
+þitem V1.0.3 7 Jan 2007
+
+Fixed access to raw drives (\\.\X:) in Mapiso.þbreak
+Fixed bug which allowed reading beyond end of files.þbreak
+Increased daemon file handle count to allow more ISO images to be mapped
+simultaneously.þbreak
+Added utility to attach and detach ISOs automatically.
+
+þitem V1.0.2 28 Jan 2006
+
+Allow ISO images greater than 2GB to be read.
+
+þitem V1.0.1 23 Jul 2005
+
+Mapiso now accepts relative pathnames rather than only fully qualified ones.þbreak
+Fixed major memory leak in the daemon.þbreak
+Fixed errors in the documentation.
+
+þitem V1.0.0 18 Dec 2004
+
+Major rewrite to clean up some of the code and add support for High Sierra
+images and ISO-9660 images without Joliet.þbreak
+ISOFS is now maintained by Paul Ratcliffe.
+
+þitem V0.2.1 02.10.2001
+
+Added support for file and directory times which was still missing.þbreak
+Found the solution for the missing notebook pages. You have to tell OS/2
+that there's support for EAs even if that's not true.
+
+þitem V0.2.0 25.08.2001
+
+ Fixed mainly a memory leak and the still broken extended attribute handling.þbreak
+ Some more bugs are fixed I forgot ;-).þbreak
+ Added more descriptive error messages to þtt{mntisofs} so it's easier to find out
+ what's going wrong.þbreak
+ This seems to be the first really stable release.
+
+þitem V0.1.5 03.10.2000
+
+ Added missing filesystem driver to the archive.
+
+þitem V0.1.3 30.09.2000
+
+ Fixed broken extended attribute handling which caused the WPS to crash.þbreak
+ Added support for volume label.
+
+þitem V0.1.1 20.08.2000
+
+ First release
+
+þenddescription
+
+þh1 Author
+
+  This software was written by Paul Ratcliffe. Send bug reports,
+  patches, or other comments to þtt{<paul@orac12.clara34.co56.uk78>}
+  (remove the numbers).
+
+  þtt{http://home.clara.net/orac/os2.htm#isofs}
+
+þh1 Credits
+
+  This file system is based on AEFS a cryptographic file system written
+  by Eelco Dolstra þtt{<edolstra@students.cs.uu.nl>}, and ISOFS 0.2.1
+  by Chris Wohlgemuth.þbreak
+  Without that work, this version of ISOFS wouldn't have been possible!
+
+  The charset conversion was taken from the cdrecord package by
+  J. Schilling.
+
+  The routines for iso9660 access were originally written by Eric Youngdale (1993),
+  Copyright 1993 Yggdrasil Computing, Incorporated.
