@@ -1,7 +1,6 @@
 DRV-ISOFS_Paul
 ==============
-
-ISOFS driver by Paul Ratcliffe. 
+ISOFS lets you mount a CD/DVD image (*.iso) as a virtual drive avoiding the need to burn any media. ISOFS driver by Paul Ratcliffe. 
 
 LICENSE
 ===============
@@ -13,8 +12,10 @@ COMPILE TOOLS
  
 AUTHORS
 ===============
+* Rich Walsh
 * Paul Ratcliffe
 
 LINKS
 ===============
+* https://ecsoft2.org/isofs
 * 
