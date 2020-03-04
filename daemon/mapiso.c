@@ -24,7 +24,7 @@
 #include <string.h>
 #include <ctype.h>
 #define INCL_ERRORS
-#define INCL_DOSMISC
+#define INCL_DOS
 #include <os2.h>
 
 #include "getopt.h"
@@ -50,6 +50,7 @@ Map an ISO file on to DRIVE-LETTER.\n\
   -v, --version        Output version information and exit\n\
   -d, --detach         Unmap ISO volume\n\
   -f, --force          Unmap even when the volume has open files\n\
+  -s, --start          Start daemon process if necessary\n\
   -o, --offset <nnn>   Offset of session on CD\n\
   -j, --jcharset <CP>  Translation codepage for unicode names\n\
                        Available codepages:\n", pszProgramName);
@@ -101,11 +102,53 @@ static void DisplayDrives(void)
 }
 
 
+static ULONG StartDaemon(void)
+{
+    ULONG       ctr;
+    ULONG       rc;
+    EASIZEBUF   data;
+    ULONG       cbData = sizeof(data);
+    ULONG       cbParms = 0;
+    RESULTCODES res;
+    char        errBuf[16];
+
+    /* ask for the max EA size supported */
+    rc = DosFSCtl(&data, cbData,  &cbData,
+                  0,     cbParms, &cbParms,
+                  FSCTL_MAX_EASIZE, (PCSZ)IFS_NAME, -1,
+                  FSCTL_FSDNAME);
+
+    if (rc != ERROR_STUBFSD_DAEMON_NOT_RUN)
+        return rc;
+
+    /* detach isofsdmn.exe */
+    rc = DosExecPgm(errBuf, sizeof(errBuf), EXEC_BACKGROUND,
+                    0, 0, &res, (PCSZ)"ISOFSDMN.EXE");
+
+    /* give the daemon up to 3 seconds to get ready */
+    if (!rc) {
+        ctr = 12;
+        do {
+            ctr--;
+            DosSleep(250);
+            cbData = sizeof(data);
+            cbParms = 0;
+            rc = DosFSCtl(&data, cbData,  &cbData,
+                          0,     cbParms, &cbParms,
+                          FSCTL_MAX_EASIZE, (PCSZ)IFS_NAME, -1,
+                          FSCTL_FSDNAME);
+        } while (ctr && rc == ERROR_STUBFSD_DAEMON_NOT_RUN);
+    }
+
+    return rc;
+}
+
+
 int main(int argc, char * * argv)
 {
    int iOffset=0;
    int c;
-   Bool fDetach = FALSE, fForce = FALSE;
+   Bool fDetach = FALSE, fForce = FALSE, fStart = FALSE;
    IFS_ATTACH attachparms;
    IFS_DETACH detachparms;
    APIRET rc;
@@ -116,6 +159,7 @@ int main(int argc, char * * argv)
       { "version", no_argument, 0, 'v' },
       { "detach", no_argument, 0, 'd' },
       { "force", no_argument, 0, 'f' },
+      { "start", no_argument, 0, 's' },
       { "jcharset", required_argument, 0, 'j' },
       { "offset", required_argument, 0, 'o' },
       { 0, 0, 0, 0 } 
@@ -124,7 +168,7 @@ int main(int argc, char * * argv)
    DosError(FERR_DISABLEHARDERR | FERR_ENABLEEXCEPTION);
    /* Parse the arguments. */
    pszProgramName = argv[0];
-   while ((c = getopt_long(argc, argv, "?hvdfj:o:", options, 0)) != EOF)
+   while ((c = getopt_long(argc, argv, "?hvdfsj:o:", options, 0)) != EOF)
    {
       switch (c)
       {
@@ -147,6 +191,10 @@ int main(int argc, char * * argv)
 
          case 'f': /* --force */
             fForce = TRUE;
+            break;
+
+         case 's': /* --start */
+            fStart = TRUE;
             break;
 
          case 'j': /* --jcharset */
@@ -198,36 +246,44 @@ int main(int argc, char * * argv)
       /* Unmap the volume attached to the specified drive. */
       rc = DosFSAttach((PSZ) pszDrive, (PSZ) IFS_NAME,
          &detachparms, sizeof(detachparms), FS_DETACH);
-      if (!rc)
-         printf ("Drive %s deleted\n", pszDrive);
    }
    else
    {
-      memset(&attachparms, 0, sizeof(attachparms));
-      if (DosQueryPathInfo ((PSZ) argv[optind], FIL_QUERYFULLNAME,
-            attachparms.szBasePath, sizeof(attachparms.szBasePath)))
-         strcpy (attachparms.szBasePath, argv[optind]);
-
-      if (pszCharSet)
-         strcpy(attachparms.szCharSet, pszCharSet);
-
-      attachparms.iOffset=iOffset;
-      /* Send the attachment request to the FSD. */
-      rc = DosFSAttach((PSZ) pszDrive, (PSZ) IFS_NAME,
-         &attachparms, sizeof(attachparms), FS_ATTACH);
-      if (rc == ERROR_ALREADY_ASSIGNED)
+      rc = 0;
+      if (fStart)
+         rc = StartDaemon();
+      if (!rc)
       {
-         DosFSAttach((PSZ) pszDrive, (PSZ) IFS_NAME,
-            &detachparms, sizeof(detachparms), FS_DETACH);
+         memset(&attachparms, 0, sizeof(attachparms));
+         if (DosQueryPathInfo ((PSZ) argv[optind], FIL_QUERYFULLNAME,
+               attachparms.szBasePath, sizeof(attachparms.szBasePath)))
+            strcpy (attachparms.szBasePath, argv[optind]);
+   
+         if (pszCharSet)
+            strcpy(attachparms.szCharSet, pszCharSet);
+   
+         attachparms.iOffset=iOffset;
+         /* Send the attachment request to the FSD. */
          rc = DosFSAttach((PSZ) pszDrive, (PSZ) IFS_NAME,
             &attachparms, sizeof(attachparms), FS_ATTACH);
+         if (rc == ERROR_ALREADY_ASSIGNED)
+         {
+            DosFSAttach((PSZ) pszDrive, (PSZ) IFS_NAME,
+               &detachparms, sizeof(detachparms), FS_DETACH);
+            rc = DosFSAttach((PSZ) pszDrive, (PSZ) IFS_NAME,
+               &attachparms, sizeof(attachparms), FS_ATTACH);
+         }
       }
-
-      if (!rc)
-         printf ("%s => %s\n", pszDrive, attachparms.szBasePath);
    }
 
-   if (rc)
+   if (!rc)
+   {
+      if (fDetach)
+         printf ("Drive %s deleted\n", pszDrive);
+      else
+         printf ("%s => %s\n", pszDrive, attachparms.szBasePath);
+   }
+   else
    {
       fprintf(stderr, "%s: Error %ld %smapping %s volume\n",
           pszProgramName, rc, fDetach ? "un" : "", IFS_NAME);
@@ -256,3 +312,4 @@ int main(int argc, char * * argv)
 
    return rc;
 }
+

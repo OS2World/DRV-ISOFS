@@ -7,19 +7,16 @@
 
     osdir = STRIP(VALUE('OSDIR',,'OS2ENVIRONMENT'))
     if osdir='' then do
-        bindir = '?:\OS2'
-        docdir = '?:\OS2\BOOK'
-        nlsdir = '?:\OS2'
+		bindir = '?:\OS2'
+		docdir = '?:\OS2\BOOK'
     end
-    else do
-        bindir = osdir||'\bin'
-        docdir = osdir||'\book'
-        nlsdir = osdir||'\lang'
+	else do
+		bindir = osdir||'\bin'
+		docdir = osdir||'\book'
     end
 
-    call WirexxPutEnv 'BINDIR', bindir
-    call WirexxPutEnv 'DOCDIR', docdir
-    call WirexxPutEnv 'NLSDIR', nlsdir
+	call WirexxPutEnv 'BINDIR', bindir
+	call WirexxPutEnv 'DOCDIR', docdir
 
     call SysDestroyObject '<ISOFS_MAP>'
     call SysDestroyObject '<ISOFS_UNMAP>'
@@ -33,8 +30,8 @@
      TARGET="$(BINDIR)" FIXED
      TITLE="ISOFS - Installable filesystem for ISO image files"
      SELECT
-     CREATEOBJECT="REPLACE WPFolder|ISOFS Filesystem|<WP_DESKTOP>|OBJECTID=<ISOFS_FOLDER>"
-     CREATEOBJECT="REPLACE WPProgram|ISODrive|<ISOFS_FOLDER>|EXENAME=$(1)\isodrive.exe;PROGTYPE=PM;ASSOCFILTER=*.ISO,*.*.ISO,*.*.*.ISO,*.*.*.*.ISO,,;CCVIEW=YES;OBJECTID=<ISOFS_ISODRIVE>"
+     CREATEOBJECT="WPFolder|ISOFS Filesystem|<WP_DESKTOP>|OBJECTID=<ISOFS_FOLDER>"
+     CREATEOBJECT="WPProgram|ISODrive|<ISOFS_FOLDER>|EXENAME=$(1)\isodrive.exe;PROGTYPE=PM;ASSOCFILTER=*.ISO,*.*.ISO,*.*.*.ISO,*.*.*.*.ISO,,;CCVIEW=YES;OBJECTID=<ISOFS_ISODRIVE>"
      CONFIGSYS="RUN=ISOFSDMN.EXE | REMOVELINE"
      CONFIGSYS="IFS=STUBFSD.IFS ISOFS | REMOVELINE"
      CONFIGSYS="IFS=$(1)\STUBFSD.IFS ISOFS | UNIQUE(STUBFSD.IFS ISOFS)"
@@ -54,14 +51,6 @@
 </PCK>
 
 <PCK INDEX=3
-     PACKAGEID="Paul Ratcliffe\ISOFS\NLS\1\1\0\0"
-     TARGET="$(NLSDIR)"
-     TITLE="ISOFS - NLS Support"
-     SELECT
->This package contains the ISOFS NLS support files.
-</PCK>
-
-<PCK INDEX=4
      PACKAGEID="Paul Ratcliffe\ISOFS\Source\1\1\0\0"
      TARGET="$(WARPIN_DEFAULTAPPSPATH)\ISOFS\Source"
      TITLE="ISOFS - Source"
@@ -135,7 +124,7 @@ character.
 <TEXT>
 WarpIN will modify your CONFIG.SYS to load the driver and daemon and will
 create a folder containing the Documentation and the drive mapping
-utility on your desktop.
+utilities on your desktop.
 </TEXT>
 </PAGE>
 

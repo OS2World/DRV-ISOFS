@@ -25,7 +25,9 @@
 #include "stubfsd.h"
 
 #define IFS_NAME "ISOFS"
-#define IFS_VERSION "ISOFS 1.0.3"
+#define IFS_VERSION "ISOFS 1.0.4"
+
+#define ISOFS_MOUNT_SEM    "\\SEM32\\ISOFS\\MOUNT"
 
 #define ERROR_ISOFS_BASE          (ERROR_STUBFSD_BASE + 100)
 #define ERROR_ISOFS_SETPARAMS (ERROR_ISOFS_BASE + 1) /* error settings params */

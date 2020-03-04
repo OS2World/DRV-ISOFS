@@ -287,6 +287,7 @@ FS_INIT(
    SEL aselMapping[2];
    char far * p;
    int i;
+   char errmsg[] = "STUBFSD: no filesystem name parameter - using ISOFS\r\n";
 
    Device_Help = (PFN) pDevHlp;
 
@@ -294,18 +295,27 @@ FS_INIT(
 
    /* Parse the IFS name. */
    p = pszParm;
-   while ((*p == ' ') || (*p == '\t')) p++;
-   if (*p) {
-      for (i = 0;
-           (i < sizeof(FS_NAME)) &&
-              (*p) &&
-              (*p != ' ') &&
-              (*p != '\t');
-           i++)
+   if (!IS_NULL(p)) {
+      while (*p == ' ' || *p == '\t')
+         p++;
+   }
+
+   /* If no name was supplied, display an error msg and
+    * use the default (ISOFS); otherwise, copy the name.
+    */
+   if (IS_NULL(p) || !*p) {
+      Dos16Write(1, errmsg, sizeof(errmsg)-1, &i);
+      strcpy(FS_NAME, "ISOFS");
+   }
+   else {
+      for (i = 0; i < sizeof(FS_NAME); i++) {
+         if (!*p || *p == ' ' || *p == '\t')
+            break;
          FS_NAME[i] = *p++;
+      }
       FS_NAME[i] = 0;
    }
-   
+
    /* Allocate enough GDT selectors. */
    rc = DevHelp_AllocGDTSelector(aselMapping, 2);
    if (rc) return rc;

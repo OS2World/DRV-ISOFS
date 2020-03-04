@@ -1,0 +1,158 @@
+;*****************************************************************************
+;*  isodrive_en.nls                                                          *
+;*                                                                           *
+;*  Copyright (C) 1999 Eelco Dolstra (edolstra@students.cs.uu.nl)            *
+;*                                                                           *
+;*  Modifications for ISOFS:                                                 *
+;*  Copyright (C) 2000 Chris Wohlgemuth (chris.wohlgemuth@cityweb.de)        *
+;*  Copyright (C) 2005-2006 Paul Ratcliffe                                   *
+;*  Copyright (C) 2017 Rich Walsh                                            *
+;*                                                                           *
+;*  This program is free software; you can redistribute it and/or modify     *
+;*  it under the terms of the GNU General Public License as published by     *
+;*  the Free Software Foundation; either version 2, or (at your option)      *
+;*  any later version.                                                       *
+;*                                                                           *
+;*  This program is distributed in the hope that it will be useful,          *
+;*  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+;*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+;*  GNU General Public License for more details.                             *
+;*                                                                           *
+;*  You should have received a copy of the GNU General Public License        *
+;*  along with this program; if not, write to the Free Software Foundation,  *
+;*  Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.           *
+;*                                                                           *
+;*****************************************************************************
+;*                                                                           *
+;*  Translator:  (your name and email address)                               *
+;*        Date:  2018-01-01                                                  *
+;*                                                                           *
+;*****************************************************************************
+;
+; Notes:
+;
+;   Message numbers are normally separated from message text by one space.
+;   Do not change the number of lines assigned to a message
+;
+;*****************************************************************************
+;
+ISO
+;
+;
+; ISO_Title (do not translate)
+ISO0001I: IsoDrive
+;
+; ISO_Cancel
+ISO0002I: ~Cancel
+;
+;
+; mount/unmount failure dialog
+;
+; ISO_MountFailure (dlg title)
+ISO0003I: ISOFS Mount Failure
+;
+; ISO_UnmountFailure (dlg title)
+ISO0004I: ISOFS Unmount Failure
+;
+; ISO_InvalidOffset
+ISO0005I: Invalid offset.
+;
+; ISO_FileOpen
+ISO0006I: Can't open ISO image file.
+;
+; ISO_NotIso
+ISO0007I: Image file is not in ISO format.
+;
+; ISO_DaemonNotRun
+ISO0008I: The ISOFS daemon is not running.
+;
+; ISO_InvalidDrive
+ISO0009I: The drive letter is not in use.
+;
+; ISO_AlreadyAssigned
+ISO0010I: The drive letter is already in use.
+;
+; ISO_InvalidParameter
+ISO0011I: Invalid parameter.
+;
+; ISO_InvalidFsdName
+ISO0012I: 'stubfsd.ifs' is missing (check config.sys).
+;
+; ISO_UnknownError
+ISO0013I: Unknown error.
+;
+; ISO_AttachFailed
+ISO0014I: Failed to attach drive %c: - return code= %ld
+;
+; ISO_DetachFailed
+ISO0015I: Failed to detach drive %c: - return code= %ld
+;
+;
+; main dialog
+;
+; ISO_CurrentDrives
+ISO0016I: ~Current ISOFS Drives
+;
+; ISO_OptionsButton
+ISO0017I: ~Options...
+;
+;
+; mount dialog
+;
+; ISO_ConfirmMount (dlg title)
+ISO0018I: Confirm ISOFS Mount
+;
+; ISO_MountFile
+ISO0019I: Mount ~ISO file
+;
+; ISO_Drive
+ISO0020I: ~Drive
+;
+; ISO_Codepage
+ISO0021I: Code~page
+;
+; ISO_Offset
+ISO0022I: ~Offset
+;
+; ISO_Mount
+ISO0023I: ~Mount
+;
+;
+; unmount dialog
+;
+; ISO_ConfirmUnmount (dlg title)
+ISO0024I: Confirm ISOFS Unmount
+;
+; ISO_UnmountDrive
+ISO0025I: Unmount Drive ?:
+;
+; ISO_UnmountInvalid
+ISO0026I: <invalid drive>
+;
+; ISO_EmergencyUnmount
+ISO0027I: Emergency unmount
+;
+; ISO_Unmount
+ISO0028I: ~Unmount
+;
+;
+; options dialog
+;
+; ISO_Options (dlg title)
+ISO0029I: Options
+;
+; ISO_ISOFSOptions
+ISO0030I: ISOFS Options
+;
+; ISO_AutoMount
+ISO0031I: ~AutoMount:  double-click to mount/unmount
+;
+; ISO_Confirm
+ISO0032I: Confirm before ~mount/unmount
+;
+; ISO_Advise
+ISO0033I: Advise if mount/unmount ~failed
+;
+; ISO_Save
+ISO0034I: ~Save
+;

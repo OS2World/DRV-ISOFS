@@ -20,73 +20,41 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #include <string.h>
-
 #include "ifsdmn.h"
 
 
-int compareEANames(char * pszName1, char * pszName2) 
+static APIRET storeEA(char * pszName, ULONG * pcbData, PFEA * ppfea)
 {
-   return stricmp(pszName1, pszName2);
-}
-
-
-static APIRET storeEA(char * pszName, int cbValue, octet * pabValue,
-   ULONG * pcbData, PFEA * ppfea)
-{
-   int cbName, cbSize;
+   int cbName = 0;
+   int cbSize;
    PFEA pfea = *ppfea;
-   
-   logMsg(L_DBG,
-          "In %s, line %d, storeEA(): pszName: %s",
-          __FILE__, __LINE__, pszName);
 
+   logMsg(L_DBG,
+          "In %s, line %d, storeEA(): pszName: '%s', *pcbData: %d, *ppfea: %x\n",
+          __FILE__, __LINE__, pszName, *pcbData, *ppfea );
+   
    cbName = strlen(pszName);
-   cbSize = sizeof(FEA) + cbName + 1 + cbValue;
+   cbSize = sizeof(FEA) + cbName + 1;
 
    /* Enough space? */
-   if (*pcbData < cbSize) return ERROR_BUFFER_OVERFLOW;
+   if (*pcbData < cbSize) {
+      logMsg(L_DBG,
+            "In %s, line %d, storeEA(): ERROR_BUFFER_OVERFLOW\n",
+            __FILE__, __LINE__);
+      return ERROR_BUFFER_OVERFLOW;
+   }
    
-   /* Copy the EA to the FEA. We only have empty EAs. */
+   /* Construct an empty EA. */
    pfea->fEA = 0;
    pfea->cbName = cbName;
+   pfea->cbValue = 0;
 
-   pfea->cbValue = cbValue;
+   memcpy((char*)(&pfea[1]), pszName, cbName + 1);
 
-   memcpy(sizeof(FEA) + (char *) pfea, pszName, cbName + 1);
-
-   if (cbValue)
-      memcpy(sizeof(FEA) + cbName + 1 + (char *) pfea,
-         pabValue, cbValue);
-
-   *ppfea = (PFEA) (cbSize + (char *) pfea);
-
+   *ppfea = (PFEA) ((char*)pfea + cbSize);
    *pcbData -= cbSize;
 
    return NO_ERROR;
-}
-
-
-static APIRET storeMatchingEAs( char * pszName, ULONG * pcbData, PFEA * ppfea)
-{
-   APIRET rc;
-   ULONG cbData = *pcbData;
-   PFEA pfea = *ppfea;
-
-   logMsg(L_DBG,
-          "In %s, line %d, storeMatchingEAs(): pszName: %s, pcbData: %xh, ppfea: %xh",
-          __FILE__, __LINE__, pszName, pcbData, ppfea );
-
-   if (pszName) {
-     rc = storeEA(pszName, 0, 0, &cbData, &pfea);
-     if (rc)
-       return rc;
-   }
-
-   *pcbData = cbData;
-   *ppfea = pfea;
-
-   return NO_ERROR;
-
 }
 
 
@@ -121,19 +89,12 @@ static APIRET storeEAsInFEAList2( PGEALIST pgeas, ULONG cbData, char * pData)
        if ((cbLeft < pgea->cbName + 2) ||
            (pgea->szName[pgea->cbName]))
          return ERROR_EA_LIST_INCONSISTENT;
-       rc = storeMatchingEAs( pgea->szName, &cbData, &pfea);
+       rc = storeEA(pgea->szName, &cbData, &pfea);
        if (rc) return rc;
        cbLeft -= pgea->cbName + 2;
        pgea = (PGEA) (pgea->cbName + 2 + (char *) pgea);
      }
-     
-   } else {
-     /* Store all EAs. */
-     rc = storeMatchingEAs(0, &cbData, &pfea);
-     if (rc)
-       return rc;
    }
-
 
    pfeas->cbList = (char *) pfea - (char *) pData;
 

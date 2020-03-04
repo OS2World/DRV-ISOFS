@@ -1,13 +1,21 @@
 /**/
-wpistem = 'isofs103'
-filetime = '01:03:00'
+wpistem = 'isofs110'
+filetime = '01:10:00'
 wisfile = 'isofs.wis'
-packages.0 = 2
+packages.0 = 4
 packages.stub = ''
 packages.1.id = 1
 packages.1.dir = 'bin'
+packages.1.mask = '*.exe *.ico *.ifs'
 packages.2.id = 2
-packages.2.dir = 'source'
+packages.2.dir = 'bin'
+packages.2.mask = '*.inf *.txt'
+packages.3.id = 3
+packages.3.dir = 'bin'
+packages.3.mask = '*.msg'
+packages.4.id = 4
+packages.4.dir = 'source'
+packages.4.mask = '*'
 /**/
 call RxFuncAdd 'SysLoadFuncs', 'RexxUtil', 'SysLoadFuncs'
 call SysLoadFuncs
@@ -33,7 +41,7 @@ call directory warpindir
 wic1 = '@wic' reldir'\'wpistem '-a'
 wic2 = ''
 do i = 1 to packages.0
-  wic2 = wic2 packages.i.id '-r -c'reldir'\'packages.i.dir '*'
+  wic2 = wic2 packages.i.id '-r -c'reldir'\'packages.i.dir packages.i.mask
   call setfiletime reldir'\'packages.i.dir
 end
 wic3 = packages.stub '-s' makedir'\'wisfile

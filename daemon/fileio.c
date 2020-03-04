@@ -35,7 +35,7 @@ APIRET fsRead(ServerData * pServerData, struct read * pread)
    int iStartExtent;
    unsigned char buff[2048];
    char *pData=(char*) pServerData->pData;
-   int iSeek;
+   /*int iSeek;*/
 
    pread->cbLen = 0; /* on output, # of bytes read */ 
    sectorOffset=0;
@@ -55,7 +55,7 @@ APIRET fsRead(ServerData * pServerData, struct read * pread)
 
    iStartExtent=pread->pOpenFileData->iExtent+pread->sffsi.sfi_position/2048;
     
-   iSeek=lseek(pread->pVolData->isoFile->h,((off_t)(iStartExtent - sectorOffset)) << 11, SEEK_SET);
+   /*iSeek=*/lseek(pread->pVolData->isoFile->h,((off_t)(iStartExtent - sectorOffset)) << 11, SEEK_SET);
    bRead=read(pread->pVolData->isoFile->h, &buff, sizeof(buff));/* Read first Extent */
    
    logMsg(L_DBG, "bRead=%ld", bRead);

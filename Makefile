@@ -2,17 +2,14 @@ BASE = .
 include $(BASE)\Makefile.inc
 
 all: docs
-	cd misc && $(MAKE) -w $@ && cd ..
 	cd system\$(SYSTEM) && $(MAKE) -w $@ && cd ..\..
 	cd libunls && $(MAKE) -w $@ && cd ..
 	cd daemon && $(MAKE) -w $@ && cd ..
 	cd driver && $(MAKE) -w $@ && cd ..
 
 clean:
-	$(RM) readme.txt
-	$(RM) readme.htm
-	$(RM) readme.inf
-	cd misc && $(MAKE) -w $@ && cd ..
+	$(RM) isofs.txt
+	$(RM) isofs.inf
 	cd system\$(SYSTEM) && $(MAKE) -w $@ && cd ..\..
 	cd libunls && $(MAKE) -w $@ && cd ..
 	cd daemon && $(MAKE) -w $@ && cd ..
@@ -20,27 +17,26 @@ clean:
 	$(RM) ..\$(DISTNAME).zip
 	$(RM) ..\$(WARPINNAME)
 
-docs: readme.txt readme.inf readme.htm
+docs: isofs.txt isofs.inf
 
-readme.txt: readme.src
+isofs.txt: readme.src
 	emxdoc -T -o $@ $<
 
-readme.htm: readme.src
-	emxdoc -H -o $@ $<
-
-readme.inf: readme.src
-	emxdoc -I -o readme.ipf $<
-	ipfc readme.ipf $@
-	$(RM) readme.ipf
+isofs.inf: readme.src
+	emxdoc -I -o isofs.ipf $<
+	ipfc isofs.ipf $@
+	$(RM) isofs.ipf
 
 dist: Makefile
 	make all
 	$(MD) ..\bin
 	$(CP) daemon\*.exe ..\bin
+	$(CP) daemon\*.ico ..\bin
+	$(CP) daemon\*.msg ..\bin
 	$(CP) driver\stubfsd.ifs ..\bin
-	$(CP) readme.inf ..\bin
-	$(CP) automap.* ..\bin
+	$(CP) isofs.inf ..\bin
+	$(CP) isofs.txt ..\bin
 	make clean
-	cd ..\bin && lxlite *.exe && cd ..\source
+	cd ..\bin && $(LXLITE) *.exe && cd ..\source
 	makewpi.cmd ..
-	zip -9oj ..\$(DISTNAME) ..\$(WARPINNAME) file_id.diz
+	zip -9Xoj ..\$(DISTNAME) ..\$(WARPINNAME) file_id.diz ..\bin\isofs.txt

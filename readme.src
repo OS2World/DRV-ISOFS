@@ -1,4 +1,4 @@
-þtitle ISOFS V1.0.3 Readme
+þtitle ISOFS V1.1.0 Readme
 
 þif text
 þh= Table of Contents
@@ -23,17 +23,28 @@
   file and create a folder on your desktop containing objects for the
   documentation and the drive mapping utilities.
 
-  To install manually, add the following lines to your CONFIG.SYS file
+  þem{Important:} v1.1.0 installs its files in different directories
+  than previous versions and is unable to remove the old files. Please
+  þem{uninstall} any previous version before installing this package.
+
+  To install manually, add the following line to your CONFIG.SYS file
   and then reboot.
 
 þexample
   IFS=<install-path>\stubfsd.ifs ISOFS
+þendexample
+  This line loads the FSD (file system driver), which is just a
+  stub that passes requests to the daemon (þtt{isofsdmn}) which
+  does the real work.
+
+  You can also add the following line to config.sys to have the
+  daemon load during startup. In most cases, this isn't necessary
+  since þtt{isodrive} always starts it if needed, and þtt{mapiso}
+  will start it on demand is you use the þtt{-s} switch.
+
+þexample
   RUN=<install-path>\isofsdmn.exe
 þendexample
-
-  The first line loads the FSD (file system driver), which is really a
-  stub that passes requests to the daemon, which is started in the
-  second line and does the real work.
 
 
 þh2 Uninstallation
@@ -51,101 +62,141 @@
 þendexample
 
 
-þh2 Overview
+þh1 Using ISOFS
 
-  To access an ISO file as a volume, you must attach (map) it to a drive
-  letter. This can be done as follows:
+  This section describes the three programs in the ISOFS package:
 
+þitemize
+
+þitem
+
+  þsy{ISODrive} - a control panel that lets you mount and unmount ISO
+  files and control options.
+
+þitem
+ 
+  þsy{MapISO} - a command line program for mounting and unmounting
+  ISOs well suited for use in scripts.
+
+þitem
+ 
+  þsy{isofsdmn} - a background program (daemon) that does the actual
+  work of reading ISO files.
+
+þenditemize
+
+
+þh2 Quick Start
+
+  To access an ISO file as a volume, you must mount it as a drive and
+  assign it a letter. Once that's done, you can copy, extract or
+  view files contained in the image as if they were on your hard disk.
+  When you have finished using the volume, you can unmount it.
+
+ Mounting and unmounting can be done several ways:
+
+þdescription
+
+þitem þem{WPS}
+  Double-click on the ISO file. þtt{isodrive} will pop up a confirmation
+  dialog then mount it. When you're done with the volume, again
+  double-click on the file; this time an unmount confirmation will appear.
+
+þitem þem{ISODrive}
+  Open the app and press the þtt{[+]} (plus) button. Enter the file name
+  or use the File Open dialog, select a drive letter, then press þtt{[Mount]}.
+  When done, reopen the app, select the file from the main listing, then
+  press the þtt{[-]} (minus) button.
+
+þitem þem{MapISO}
+  From a command prompt (or script) enter a line like this:
 þexample
-  mapiso X: <drive>:\<path>\<filename>
+  mapiso -s X: <drive>:\<path>\<filename>
 þendexample
-
-  The file 'filename' may be accessed now as drive X:.þbreak
-  You can copy, extract or view files contained in the image as if they
-  were on your hard disk.
-
-  When you have finished using the volume:
-
+  This will start þtt{isofsdmn} if necessary, then mount the file as drive X:.
+  To unmount the volume, use:
 þexample
   mapiso X: -d
 þendexample
 
-  to detach it.
-
-  If you are using the WPS, you should just be open to double click on the
-  ISO file to attach it to the first free drive letter, and double click
-  again to detach it.
+þenddescription
 
 
-þh1 Command reference
+þh2 ISODrive
 
-  All programs use the GNU getopt syntax. They all support the following
-  options:
+  þtt{ISODrive} is an easy to use interface for ISOFS. With it you can
+  mount and unmount ISO files, and control the popups that appear when
+  you double-click an ISO file.
+
+  The main window contains a list of currently mounted ISO files along
+  with the drive letters they've been assigned. Below that are buttons
+  to mount and unmount drives, and to configure its options.
 
 þdescription
 
-þitem þsy{-h, --help}
+þitem Mount [ + ]
 
-  Print help and exit.
+  Enter the name of an ISO file or press the file dialog button (þtt{[...]})
+  to search for one. Select a drive letter, then press þtt{[Mount]}. If
+  successful, the file name and drive will appear in the main window's
+  listing.
 
-þitem þsy{-v, --version}
+  There are two additional options available that very few users need,
+  so they are hidden. Press the þtt{[<]} button to reveal them:þbreak
+  þem{Codepage:} this controls the translation of Unicode file names. Set it
+  if accented characters in file names are displayed incorrectly.þbreak
+  þem{Offset:} to access a secondary session on a multi-session CD, enter
+  its offset in sectors from the beginning of the disk.
+
+þitem Unmount [ - ]
+
+  First, select the drive you want to unmount from the listing in the
+  main window, then press the þtt{[-]} button. After confirming the
+  information shown in the dialog, press þtt{[Unmount]}. The file name
+  and drive should disappear from the main window's listing.
+
+  Note: normally, ISOFS will refuse to unmount a drive if there are any
+  open files on it. If you þem{must} unmount such a drive, check
+  þtt{Emergency unmount} first (this is the same as the þtt{--force}
+  command line option).
+
+þitem Options
+þitemize
+þitem
+  þem{AutoMount}: if you supply ISODrive with a file name but no drive
+  letter (e.g. when double-clicking on an ISO file), this feature will
+  automatically mount the file using the next available drive letter. When
+  disabled, ISODrive will open instead.
+
+þitem
+  þem{Confirm}: before mounting or unmounting a file, ISODrive will pop up
+  a dialog to have you confirm the action.
+
+þitem
+  þem{Advise}: should the mount/unmount operation fail, ISODrive will pop
+  up a dialog to advise you of the error.
+
+þenditemize
+þenddescription
+
+  ISODrive also offers a variety of command line switches to tailor its
+  operation. It supports all of the flags used by þtt{mapiso} (see next
+  section) plus these extras:
+
+þdescription
+
+þitem þsy{-a, --auto}
+
+  Enable AutoMount; this overrides your setting in Options.
+
+þitem þsy{-n, --noauto}
  
-  Print version information and exit.
+  Disable AutoMount; this overrides your setting in Options.
 
 þenddescription
 
 
-þh2 isofsdmn
-
-  The þtt{isofsdmn} program is the file system daemon. The syntax is:
-
-  þsy{isofsdmn <option>*}
-
-  It is typically started in þtt{CONFIG.SYS} by a þtt{RUN} statement
-  (þem{not} a þtt{CALL} statement) or from a script using the
-  þtt{detach} command.
-
-  The options are:
-
-þdescription
-
-þitem þsy{-q, --quit}
-
-  Kills the running daemon process. This will also detach any mapped
-  drives from their related ISO files.
-
-þitem þsy{--logfile <filename>}
-
-  Write log messages to the file specified by þsy{<filename>}. By
-  default, messages are written to standard error (which is the nul
-  device if the daemon is started from þtt{CONFIG.SYS} or using
-  þtt{detach}).
-
-þitem þsy{--loglevel <n>}
-
-  Set the severity threshold of log messages. Only messages with a
-  severity lower than or equal to the log level are actually written
-  to the log file. The levels are:
-
-þdescription
-þitem 1
-  Fatal
-þitem 2
-  Evil (i.e. not fatal but worse than a 'normal' error)
-þitem 3
-  Error
-þitem 4
-  Warning
-þitem 7
-  Information
-þitem 9
-  Debug
-þenddescription
-
-þenddescription
-
-
-þh2 mapiso
+þh2 MapISO
 
   The þtt{mapiso} program attaches an ISO file to a drive letter.
   The syntax is:
@@ -167,6 +218,20 @@
 
   Translation codepage for the unicode names of Joliet CDs. If this
   switch is omitted the default system codepage is used.
+
+þitem þsy{-s, --start}
+
+  Starts the daemon process þtt{isofsdmn} if it isn't running already.
+  This switch only works when mounting an ISO - it can not be used by
+  itself.
+
+þitem þsy{-h, --help}
+
+  Print help and exit.
+
+þitem þsy{-v, --version}
+ 
+  Print version information and exit.
 
 þenddescription
 
@@ -223,7 +288,114 @@
   You may access all these mounted drives in parallel.
 
 
-þh1 Known problems and limitations
+þh2 isofsdmn
+
+  The þtt{isofsdmn} program is the file system daemon. The syntax is:
+
+  þsy{isofsdmn <option>*}
+
+  It is typically started by þtt{ISODrive} the first time you mount an
+  ISO file. It can also be started from þtt{CONFIG.SYS} by a þtt{RUN}
+  statement (þem{not} a þtt{CALL} statement) or from a script using the
+  þtt{detach} command.
+
+  The options are:
+
+þdescription
+
+þitem þsy{-q, --quit}
+
+  Kills the running daemon process. This will also detach any mapped
+  drives from their related ISO files.
+
+þitem þsy{--logfile <filename>}
+
+  Write log messages to the file specified by þsy{<filename>}. By
+  default, messages are written to standard error (which is the nul
+  device if the daemon is started from þtt{CONFIG.SYS} or using
+  þtt{detach}).
+
+þitem þsy{--loglevel <n>}
+
+  Set the severity threshold of log messages. Only messages with a
+  severity lower than or equal to the log level are actually written
+  to the log file. The levels are:
+
+þdescription
+þitem 1
+  Fatal
+þitem 2
+  Evil (i.e. not fatal but worse than a 'normal' error)
+þitem 3
+  Error
+þitem 4
+  Warning
+þitem 7
+  Information
+þitem 9
+  Debug
+þenddescription
+
+þitem þsy{-h, --help}
+
+  Print help and exit.
+
+þitem þsy{-v, --version}
+ 
+  Print version information and exit.
+
+þenddescription
+
+
+þh1 ISOFS Notification Semaphore
+
+  Each time þtt{isofsdmn.exe} successfully mounts or unmounts a drive,
+  it attempts to open an event semaphore named þtt{\SEM32\ISOFS\MOUNT}.
+  If it exists, the daemon posts the semaphore then closes it.
+
+  To access these notifications, a client should create this event sem
+  if it doesn't exist yet. Do þem{not} use any semaphore options except the
+  þtt{DC_SEM_SHARED} flag. If the sem already exists, open it. Clients
+  should always reset the event sem when it is posted and should ignore
+  ERROR_ALREADY_RESET return codes.
+
+þh1 Building ISOFS
+
+  The makefiles require GNU make.
+
+  To build the FSD (þtt{stubfsd.ifs}) you need Microsoft C 6.00.þbreak
+  You also need the FSD helper library and header file, which are now
+  included in this package in directory þtt{ifsinf}.
+
+  To build the daemon and the support programs you need a current version
+  of gcc, available from various locations.
+
+  In general it isn't necessary to rebuild the FSD. Unless you find a bug
+  that needs to be fixed, you can use the precompiled FSD in this package.
+  Do not use earlier versions as they contain several bugs that have now
+  been fixed.
+
+
+þh1 About ISOFS
+
+  This software was written by Paul Ratcliffe. Send bug reports,
+  patches, or other comments to þtt{<paul@orac12.clara34.co56.uk78>}
+  (remove the numbers).
+
+  þtt{http://home.clara.net/orac/os2.htm#isofs}
+
+  This file system is based on AEFS a cryptographic file system written
+  by Eelco Dolstra þtt{<edolstra@students.cs.uu.nl>}, and ISOFS 0.2.1
+  by Chris Wohlgemuth.þbreak
+  Without that work, this version of ISOFS wouldn't have been possible!
+
+  The charset conversion was taken from the cdrecord package by
+  J. Schilling.
+
+  The routines for iso9660 access were originally written by Eric Youngdale (1993),
+  Copyright 1993 Yggdrasil Computing, Incorporated.
+
+þh2 Known problems and limitations
 
 þitemize
 
@@ -244,44 +416,31 @@
 þenditemize
 
 
-þh1 Building ISOFS
-
-  The makefiles require GNU make.
-
-  To build the FSD (þtt{stubfsd.ifs}) you need Microsoft C 6.00.þbreak
-  You also need the FSD helper library and header file, which are
-  included in the FSD toolkit:
-  þtt{ftp://ftp.leo.org/pub/comp/os/os2/leo/devtools/doc/ifsinf.zip}.
-
-  To build the daemon and the support programs you need gcc or pgcc,
-  available from various locations.
-
-  In general it isn't absolutely necessary to rebuild the FSD. In fact
-  I took the precompiled FSD from the AEFS package and rewrote only
-  the daemon.
-
-
-þh1 License
-
-  ISOFS is free software; you can redistribute it and/or modify it
-  under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
-
-  ISOFS is distributed in the hope that it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-  or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-  License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with ISOFS; see the file COPYING. If not, write to the Free
-  Software Foundation, 59 Temple Place - Suite 330, Boston, MA
-  02111-1307, USA.
-
-
-þh1 History
+þh2 History
 
 þdescription
+
+þitem V1.1.0 27 Feb 2017
+
+Added þtt{ISODrive}, a GUI control panel for ISOFS. This replaces
+the 'automap.cmd' found in previous versions.þbreak
+Added a new feature that enables clients to receive notification of ISOFS
+mount/unmount events via a named shared event sempahore.þbreak
+Fixed libc panic caused by attempts to free a memory allocation twice.þbreak
+Fixed failures when clients tried to read EAs for files that have none
+(i.e. any file contained in the ISO).þbreak
+Fixed crash during boot when no filesystem name is specified in
+config.sys; 'ISOFS' is now the default value.þbreak
+Fixed a bug that might cause applications to hang when accessing an
+ISOFS drive if isofsdmn.exe had been started from config.sys.þbreak
+Refactored and reformatted code in files where bugs were found.þbreak
+Updated Makefiles and eliminated standalone 'getopt' library which
+is now part of libc.þbreak
+Updates provided by Rich Walsh.
+
+þitem V1.0.4 27 Nov 2017
+
+Interim version not released to the public.
 
 þitem V1.0.3 7 Jan 2007
 
@@ -336,23 +495,21 @@ that there's support for EAs even if that's not true.
 
 þenddescription
 
-þh1 Author
 
-  This software was written by Paul Ratcliffe. Send bug reports,
-  patches, or other comments to þtt{<paul@orac12.clara34.co56.uk78>}
-  (remove the numbers).
+þh2 License
 
-  þtt{http://home.clara.net/orac/os2.htm#isofs}
+  ISOFS is free software; you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
 
-þh1 Credits
+  ISOFS is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+  or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+  License for more details.
 
-  This file system is based on AEFS a cryptographic file system written
-  by Eelco Dolstra þtt{<edolstra@students.cs.uu.nl>}, and ISOFS 0.2.1
-  by Chris Wohlgemuth.þbreak
-  Without that work, this version of ISOFS wouldn't have been possible!
+  You should have received a copy of the GNU General Public License
+  along with ISOFS; see the file COPYING. If not, write to the Free
+  Software Foundation, 59 Temple Place - Suite 330, Boston, MA
+  02111-1307, USA.
 
-  The charset conversion was taken from the cdrecord package by
-  J. Schilling.
-
-  The routines for iso9660 access were originally written by Eric Youngdale (1993),
-  Copyright 1993 Yggdrasil Computing, Incorporated.

@@ -1,33 +1,40 @@
 BASE = ..
 include $(BASE)\Makefile.inc
 
-SRCS = isofsdmn.c isoacces.c attach.c find.c misc.c dir.c openclos.c \
- fileio.c fileinfo.c fileop.c ea.c utils.c
+OBJS1 = isofsdmn.o isoacces.o attach.o find.o misc.o dir.o openclos.o \
+ fileio.o fileinfo.o fileop.o ea.o utils.o
 
-SRCS2 = mapiso.c
+OBJS2 = mapiso.o
 
-SRCS3 = isoinfo.c
+OBJS3 = isoinfo.o
 
-LIB =  $(BASE)\misc\getopt.a $(BASE)\system\$(SYSTEM)\sysdep.a \
- $(BASE)\libunls\unls.a
+OBJS4 = isodrive.o
 
-all: isofsdmn.exe mapiso.exe isoinfo.exe
+LIB = $(BASE)\system\$(SYSTEM)\sysdep.a $(BASE)\libunls\unls.a
 
-isofsdmn.exe: $(SRCS:.c=.o) $(LIB)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(SRCS:.c=.o) $(LIB) -o $@
+all: isofsdmn.exe mapiso.exe isoinfo.exe isodrive.exe
 
-mapiso.exe: $(SRCS2:.c=.o) $(LIB)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(SRCS2:.c=.o) $(LIB) -o $@
+isofsdmn.exe: $(OBJS1) $(LIB)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS1) $(LIB) -o $@
 
-isoinfo.exe: $(SRCS3:.c=.o) $(LIB)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(SRCS3:.c=.o) $(LIB) -o $@
+mapiso.exe: $(OBJS2) $(LIB)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS2) $(LIB) -o $@
 
-clean:
-	$(RM) isofsdmn.exe
-	$(RM) mapiso.exe
-	$(RM) isoinfo.exe
+isoinfo.exe: $(OBJS3) $(LIB)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS3) $(LIB) -o $@
+
+isodrive.exe: $(OBJS4) $(LIB) isodrive.res nls
+	$(CC) $(CFLAGS) $(LDFLAGS)  -Zlinker /PMTYPE:PM $(OBJS4) $(LIB) -o $@
+	$(RC) -x2 -n isodrive.res $@
+
+nls: $(patsubst %.nls,%.msg,$(wildcard *.nls)) isodrive.h
+
+clean: clean-default
+	$(RM) *.exe *.map *.res *.msg
 
 ifneq ($(MAKECMDGOALS),clean)
-include $(SRCS:.c=.d)
-include $(SRCS2:.c=.d)
+-include $(OBJS1:.o=.d)
+-include $(OBJS2:.o=.d)
+-include $(OBJS3:.o=.d)
+-include $(OBJS4:.o=.d)
 endif

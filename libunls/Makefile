@@ -1,19 +1,22 @@
 BASE = ..
 include $(BASE)\Makefile.inc
 
-SRCS =	nls_base.c nls_cp437.c nls_cp737.c nls_cp775.c nls_cp850.c \
-	nls_cp852.c nls_cp855.c nls_cp857.c nls_cp860.c nls_cp861.c \
-	nls_cp862.c nls_cp863.c nls_cp864.c nls_cp865.c nls_cp866.c \
-	nls_cp869.c nls_cp874.c nls_iso8859-1.c nls_iso8859-14.c \
-	nls_iso8859-15.c nls_iso8859-2.c nls_iso8859-3.c nls_iso8859-4.c \
-	nls_iso8859-5.c nls_iso8859-6.c nls_iso8859-7.c nls_iso8859-8.c \
-	nls_iso8859-9.c nls_koi8-r.c nls_mac-roman.c
+OBJS =	nls_base.o nls_cp437.o nls_cp737.o nls_cp775.o nls_cp850.o \
+	nls_cp852.o nls_cp855.o nls_cp857.o nls_cp860.o nls_cp861.o \
+	nls_cp862.o nls_cp863.o nls_cp864.o nls_cp865.o nls_cp866.o \
+	nls_cp869.o nls_cp874.o nls_iso8859-1.o nls_iso8859-14.o \
+	nls_iso8859-15.o nls_iso8859-2.o nls_iso8859-3.o nls_iso8859-4.o \
+	nls_iso8859-5.o nls_iso8859-6.o nls_iso8859-7.o nls_iso8859-8.o \
+	nls_iso8859-9.o nls_koi8-r.o nls_mac-roman.o
 
 all:	unls.a 
 
-unls.a:	$(SRCS:.c=.o)
+unls.a:	$(OBJS)
 	ar crs unls.a $?
 
+clean: clean-default
+	$(RM) *.a
+
 ifneq ($(MAKECMDGOALS),clean)
-include $(SRCS:.c=.d)
+-include $(OBJS:.o=.d)
 endif

@@ -20,6 +20,7 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #define INCL_DOSNLS
+#define INCL_DOSSEMAPHORES
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -396,7 +397,8 @@ static APIRET queryAttachmentInfo(ServerData * pServerData,
 
 APIRET fsAttach(ServerData * pServerData, struct attach * pattach)
 {
-   APIRET rc;
+   APIRET rc = 0;
+   HEV    hevMount = 0;
    
    logMsg(L_DBG, "FS_ATTACH, flag=%hd, szDev=%s, cbParm=%d",
       pattach->fsFlag, pattach->szDev, pattach->cbParm);
@@ -411,10 +413,11 @@ APIRET fsAttach(ServerData * pServerData, struct attach * pattach)
       case FSA_ATTACH:
          rc = attachVolume(pServerData, pattach);
          memset(pServerData->pData, 0, sizeof(IFS_ATTACH)); /* burn */
-         return rc;
+         break;
          
       case FSA_DETACH:
-         return detachVolume(pServerData, pattach);
+         rc = detachVolume(pServerData, pattach);
+         break;
 
       case FSA_ATTACH_INFO:
          return queryAttachmentInfo(pServerData, pattach);
@@ -423,6 +426,13 @@ APIRET fsAttach(ServerData * pServerData, struct attach * pattach)
          logMsg(L_EVIL, "unknown FS_ATTACH flag: %d", pattach->fsFlag);
          return ERROR_NOT_SUPPORTED;
    }
+
+   if (!rc && !DosOpenEventSem((PCSZ)ISOFS_MOUNT_SEM, &hevMount))
+   {
+      DosPostEventSem(hevMount);
+      DosCloseEventSem(hevMount);
+   }
+   return rc;
 }
 
  
@@ -469,39 +479,32 @@ static APIRET getSetVolSer(ServerData * pServerData,
    PFSINFO pinfo;
    PVOLUMELABEL pvollabel;
   
-   if (pfsinfo->fsFlag == INFO_RETRIEVE) {
-      if (pfsinfo->cbData < sizeof(FSINFO))
-         return ERROR_BUFFER_OVERFLOW;
-      else {
-        pfsinfo->cbData = sizeof(FSINFO);
-        pinfo = (PFSINFO) pServerData->pData;
-        * (PULONG) &pinfo->fdateCreation = 0;
-        * (PULONG) &pinfo->ftimeCreation = 0;
-
-        /* Volume Label */
-        memset(pinfo->vol.szVolLabel,0,sizeof(pinfo->vol.szVolLabel));
-
-        if(strlen((pfsinfo->pVolData->chrCDName)))
-          strncpy(pinfo->vol.szVolLabel,
-                  (pfsinfo->pVolData->chrCDName),
-                  sizeof(pinfo->vol.szVolLabel)-1);
-        else
-          strcpy(pinfo->vol.szVolLabel, IFS_NAME); 
-        pinfo->vol.cch = strlen(pinfo->vol.szVolLabel);
-        pinfo->fdateCreation.day=(USHORT)pfsinfo->pVolData->chDrive;
-        pinfo->ftimeCreation.twosecs=(USHORT)pfsinfo->pVolData->chDrive;
-        return NO_ERROR;
-      } 
-   }
-   else { 
+   if (pfsinfo->fsFlag != INFO_RETRIEVE) {
      pvollabel = (PVOLUMELABEL) pServerData->pData;
-     if
-       ((pfsinfo->cbData < sizeof(VOLUMELABEL)) || (pvollabel->cch > 11))
+     if ((pfsinfo->cbData < sizeof(VOLUMELABEL)) || (pvollabel->cch > 11))
        return ERROR_INVALID_PARAMETER;
-     else {
-       return ERROR_WRITE_PROTECT;
-     }
+
+     return ERROR_WRITE_PROTECT;
    }
+
+   if (pfsinfo->cbData < sizeof(FSINFO))
+      return ERROR_BUFFER_OVERFLOW;
+
+   pfsinfo->cbData = sizeof(FSINFO);
+   pinfo = (PFSINFO)pServerData->pData;
+   memset(pinfo, 0, sizeof(FSINFO));
+
+   if (strlen((pfsinfo->pVolData->chrCDName)))
+      strncpy(pinfo->vol.szVolLabel,
+              (pfsinfo->pVolData->chrCDName),
+              sizeof(pinfo->vol.szVolLabel)-1);
+      else
+         strcpy(pinfo->vol.szVolLabel, IFS_NAME); 
+   pinfo->vol.cch = strlen(pinfo->vol.szVolLabel);
+   pinfo->fdateCreation.day = (USHORT)pfsinfo->pVolData->chDrive;
+   pinfo->ftimeCreation.twosecs = (USHORT)pfsinfo->pVolData->chDrive;
+
+   return NO_ERROR;
 }
 
 

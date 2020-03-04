@@ -261,9 +261,9 @@ int parse_rr(pnt, len, cont_flag)
 {
 	int slen;
 	int ncount;
-	int extent;
+	/*int extent;*/
 	int cont_extent, cont_offset, cont_size;
-	int flag1, flag2;
+	int /*flag1,*/ flag2;
 	unsigned char *pnts;
 	char symlinkname[1024];
 	int goof;
@@ -273,14 +273,14 @@ int parse_rr(pnt, len, cont_flag)
 	cont_extent = cont_offset = cont_size = 0;
 
 	ncount = 0;
-	flag1 = flag2 = 0;
+	/*flag1 =*/ flag2 = 0;
 	while(len >= 4) {
 		if(pnt[3] != 1 && pnt[3] != 2) {
 		  printf("**BAD RRVERSION (%d)\n", pnt[3]);
 		  return 0;	/* JS ??? Is this right ??? */
 		}
 		ncount++;
-		if(pnt[0] == 'R' && pnt[1] == 'R') flag1 = pnt[4] & 0xff;
+		/*if(pnt[0] == 'R' && pnt[1] == 'R') flag1 = pnt[4] & 0xff;*/
 		if(strncmp((char *)pnt, "PX", 2) == 0) flag2 |= 1;	/* POSIX attributes */
 		if(strncmp((char *)pnt, "PN", 2) == 0) flag2 |= 2;	/* POSIX device number */
 		if(strncmp((char *)pnt, "SL", 2) == 0) flag2 |= 4;	/* Symlink */
@@ -314,14 +314,14 @@ int parse_rr(pnt, len, cont_flag)
 			cont_size = isonum_733(pnt+20);
 		}
 
-		if(strncmp((char *)pnt, "PL", 2) == 0 || strncmp((char *)pnt, "CL", 2) == 0) {
+		/*if(strncmp((char *)pnt, "PL", 2) == 0 || strncmp((char *)pnt, "CL", 2) == 0) {
 			extent = isonum_733(pnt+4);
-		}
+		}*/
 
 		if(strncmp((char *)pnt, "SL", 2) == 0) {		/* Symlink */
-		        int cflag;
+		        /*int cflag;*/
 
-			cflag = pnt[4];
+			/*cflag = pnt[4];*/
 			pnts = pnt+5;
 			slen = pnt[2] - 5;
 			while(slen >= 1){

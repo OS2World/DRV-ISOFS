@@ -161,8 +161,6 @@ APIRET storeFileInfo(
 
 APIRET deleteFile(VolData * pVolData, char * pszFullName);
 
-int compareEANames(char * pszName1, char * pszName2);
-
 APIRET storeEAsInFEAList(PGEALIST pgeas, ULONG cbData, char * pData);
   
 /* FSD functions. */

@@ -106,7 +106,7 @@ APIRET storeFileInfo(
 
       if (*pcbData < sizeof(ULONG))
          return ERROR_BUFFER_OVERFLOW;
-      * (PULONG) *ppData = 0;
+      * (PULONG) *ppData = 4;
       
       *ppData += sizeof(ULONG);
       *pcbData -= sizeof(ULONG);
@@ -212,7 +212,6 @@ APIRET fsPathInfo(ServerData * pServerData,
    CHAR szDir[CCHMAXPATH], szName[CCHMAXPATH];
    Bool fHidden=FALSE;
    IsoDirEntry* pIsoDirEntry=NULL;
-   IsoDirEntry* pIsoTemp;
 
    if (VERIFYFIXED(ppathinfo->szName) ||
        verifyPathName(ppathinfo->szName))
@@ -236,8 +235,6 @@ APIRET fsPathInfo(ServerData * pServerData,
      logMsg(L_DBG, "Entry for %s not found",  ppathinfo->szName+2);
      return ERROR_PATH_NOT_FOUND;
    }
-
-   pIsoTemp=pIsoDirEntry;
 
    rc= doFileInfo(
       0,

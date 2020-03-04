@@ -1,0 +1,116 @@
+/* isodrive.rc -- ISOFS GUI interface program.
+   Copyright (C) 1999 Eelco Dolstra (edolstra@students.cs.uu.nl).
+
+   Modifications for ISOFS:
+   Copyright (C) 2000 Chris Wohlgemuth (chris.wohlgemuth@cityweb.de)
+   Copyright (C) 2005-2006 Paul Ratcliffe
+   Copyright (C) 2017 Rich Walsh
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software Foundation,
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+
+#include <os2.h>
+#include "isodrive.h"
+
+ICON    1   isodrive.ico
+
+DLGTEMPLATE MAIN_DLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "IsoDrive", MAIN_DLG, 20, 122, 172, 68, WS_VISIBLE,
+            FCF_SYSMENU | FCF_TITLEBAR | FCF_TASKLIST | FCF_CLOSEBUTTON
+            PRESPARAMS PP_FONTNAMESIZE, "9.WarpSans"
+    BEGIN
+        LTEXT           "~Current ISOFS Drives", MAIN_TX, 11, 55, 151, 8, 
+                        DT_VCENTER | DT_MNEMONIC
+        LISTBOX         MAIN_LB, 10, 23, 152, 30, LS_NOADJUSTPOS | 
+                        LS_HORZSCROLL
+        LTEXT           "Top-left", MARK_TX, 10, 9, 20, 8, NOT WS_VISIBLE
+        PUSHBUTTON      "~-", MINUS_PB, 11, 5, 16, 12, BS_NOPOINTERFOCUS
+                        PRESPARAMS PP_FONTNAMESIZE, "12.Helv"
+        PUSHBUTTON      "~+", PLUS_PB, 31, 5, 16, 12, BS_NOPOINTERFOCUS
+                        PRESPARAMS PP_FONTNAMESIZE, "12.Helv"
+        PUSHBUTTON      "~Options...", OPTS_PB, 121, 5, 40, 12, 
+                        BS_NOPOINTERFOCUS
+    END
+END
+
+
+DLGTEMPLATE MNT_DLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Confirm ISOFS Mount", MNT_DLG, 0, 0, 148, 68, 0,
+            FCF_NOBYTEALIGN | FCF_SYSMENU | FCF_TITLEBAR
+            PRESPARAMS PP_FONTNAMESIZE, "9.WarpSans"
+    BEGIN
+        LTEXT           "Mount ~ISO file", FILE_TX, 3, 58, 122, 8, DT_BOTTOM | 
+                        DT_MNEMONIC | NOT WS_GROUP
+        ENTRYFIELD      "", FILE_EF, 5, 49, 119, 6, ES_MARGIN
+        PUSHBUTTON      "~...", FILE_PB, 129, 46, 16, 11, BS_NOPOINTERFOCUS
+        CTEXT           "~Drive", DRV_TX, 3, 37, 28, 8, DT_BOTTOM | 
+                        DT_MNEMONIC | NOT WS_GROUP
+        CONTROL         "", DRV_CB, 3, 1, 28, 34, WC_COMBOBOX, 
+                        CBS_DROPDOWNLIST | WS_TABSTOP | WS_VISIBLE
+        CTEXT           "Code~page", CP_TX, 38, 37, 46, 8, DT_BOTTOM | 
+                        DT_MNEMONIC | NOT WS_GROUP | NOT WS_VISIBLE
+        CONTROL         "", CP_CB, 38, 1, 51, 34, WC_COMBOBOX, 
+                        CBS_DROPDOWNLIST | WS_TABSTOP
+        CTEXT           "~Offset", OFFS_TX, 95, 37, 30, 8, DT_BOTTOM | 
+                        DT_MNEMONIC | NOT WS_GROUP | NOT WS_VISIBLE
+        ENTRYFIELD      "", OFFS_EF, 97, 28, 26, 6, ES_MARGIN | NOT 
+                        WS_VISIBLE
+        PUSHBUTTON      "<", MORE_PB, 129, 27, 16, 10, BS_NOPOINTERFOCUS
+        PUSHBUTTON      "~Mount", OK_PB, 26, 3, 40, 12, BS_NOPOINTERFOCUS
+        PUSHBUTTON      "~Cancel", CANCEL_PB, 82, 3, 40, 12, 
+                        BS_NOPOINTERFOCUS
+    END
+END
+
+
+DLGTEMPLATE UMNT_DLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Confirm ISOFS Unmount", UMNT_DLG, 0, 0, 148, 60, 0,
+            FCF_NOBYTEALIGN | FCF_SYSMENU | FCF_TITLEBAR
+            PRESPARAMS PP_FONTNAMESIZE, "9.WarpSans"
+    BEGIN
+        LTEXT           "Unmount Drive ?:", FILE_TX, 3, 50, 141, 8, 
+                        DT_VCENTER | DT_MNEMONIC
+        ENTRYFIELD      "", FILE_EF, 5, 41, 137, 6, ES_MARGIN | ES_READONLY
+        AUTOCHECKBOX    "Emergency unmount", FORCE_CK, 4, 25, 140, 10
+        PUSHBUTTON      "~Unmount", OK_PB, 26, 3, 40, 12, BS_NOPOINTERFOCUS | 
+                        WS_GROUP
+        PUSHBUTTON      "~Cancel", CANCEL_PB, 82, 3, 40, 12, 
+                        BS_NOPOINTERFOCUS
+    END
+END
+
+
+DLGTEMPLATE OPTS_DLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Options", OPTS_DLG, 0, 0, 148, 68, 0,
+            FCF_NOBYTEALIGN | FCF_SYSMENU | FCF_TITLEBAR
+            PRESPARAMS PP_FONTNAMESIZE, "9.WarpSans"
+    BEGIN
+        LTEXT           "ISOFS Options", OPTS_TX, 3, 58, 72, 8, DT_BOTTOM | 
+                        DT_MNEMONIC | NOT WS_GROUP
+        AUTOCHECKBOX    "~AutoMount:  double-click to mount/unmount", 
+                        AUTO_CK, 6, 43, 140, 10
+        AUTOCHECKBOX    "Confirm before ~mount/unmount", CONF_CK, 6, 32, 140, 
+                        10
+        AUTOCHECKBOX    "Advise if mount/unmount ~failed", ERR_CK, 6, 21, 
+                        140, 10
+        PUSHBUTTON      "~Save", OK_PB, 26, 3, 40, 12, BS_NOPOINTERFOCUS
+        PUSHBUTTON      "~Cancel", CANCEL_PB, 82, 3, 40, 12, 
+                        BS_NOPOINTERFOCUS
+    END
+END
+

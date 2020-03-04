@@ -1,13 +1,16 @@
-BASE = ../..
+BASE = ..\..
 include $(BASE)\Makefile.inc
 
-SRCS = os2.c
+OBJS = os2.o
 
 all: sysdep.a 
 
-sysdep.a: $(SRCS:.c=.o)
+sysdep.a: $(OBJS)
 	ar crs $@ $?
 
+clean: clean-default
+	$(RM) *.a
+
 ifneq ($(MAKECMDGOALS),clean)
-include $(SRCS:.c=.d)
+-include $(OBJS:.o=.d)
 endif
