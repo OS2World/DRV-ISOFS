@@ -1,0 +1,553 @@
+ştitle ISOFS V1.1.2 Readme
+
+şif text
+şh= Inhaltsverzeichnis
+ştoc
+şendif
+
+
+şh1 Einfhrung
+
+  ISOFS ist ein installierbares Dateisystem fr OS/2, das den nahtlosen
+  Lesezugriff auf den Inhalt von ISO-Image-Dateien erm”glicht.
+  Ideal zum Brennen auf CD oder um Dateien von von CD zu extrahieren.
+
+  Dieses Dateisystem basiert auf den Quellen von AEFS, einem kryptographischen
+  Dateisystem von Eelco Dolstra.
+  Weitere Informationen finden Sie unter Credits unten.
+
+
+şh2 Installation
+
+  Es wird empfohlen WarpIn zu verwenden. WarpIn kmmert sich um die passende
+  Modifikation der CONFIG.SYS, und erstellt ein Verzeichnis auf dem Desktop,
+  das Objekte fr die Dokumentation und die Laufwerkszuordnung enth„lt.
+
+  şem{Important:} v1.1.x installiert seine Dateien in anderen Verzeichnissen
+  als frhere Versionen und kann die alten Dateien nicht entfernen.
+  Bitte deinstallieren Sie alle frheren Versionen
+  şem{uninstall}, bevor Sie dieses Paket installieren.
+  Um eine manuelle Installation durchzufhren, fgen Sie die folgende Zeile
+  zu Ihrer Datei CONFIG.SYS hinzu und starten Sie die Installation dann neu.
+
+şexample
+  IFS=<install-path>\stubfsd.ifs ISOFS
+şendexample
+  Diese Zeile l„dt den FSD (Dateisystemtreiber), der nur ein Wrapper ist.
+  Dieser sendet Anfragen an den Daemon (ştt{isofsdmn}) weiter, der dann die
+  eigentliche Arbeit erledigt.
+
+  Sie k”nnen auch die folgende Zeile zu config.sys hinzufgen, damit der
+  Dienst beim Systemstart geladen wird. In den meisten F„llen ist dies jedoch
+  nicht erforderlich, da ştt{isodrive} es immer bei Bedarf startet,
+  und ştt{mapiso} es bei Bedarf startet, wenn Sie den Schalter ştt{-s}
+  verwenden.
+
+şexample
+  RUN=<install-path>\isofsdmn.exe
+şendexample
+
+
+şh2 Deinstallation
+
+  Es wird empfohlen, WarpIn fr die Deinstallation zu verwenden.
+  Hiermit werden die w„hrend der Installation hinzugefgten Eintr„ge aus der
+  Datei CONFIG.SYS entfernt. Im Zuge dessen wird auch das Verzeichnis von ISOFS
+  vom Desktop entfernt.
+
+  Um eine manuelle Deinstallation durchzufhren, entfernen Sie die folgenden
+  Zeilen aus Ihrer Datei CONFIG.SYS und starten Sie das System
+  anschlieáend neu.
+
+şexample
+  IFS=<install-path>\stubfsd.ifs ISOFS
+  RUN=<install-path>\isofsdmn.exe
+şendexample
+
+
+şh1 Verwendung von ISOFS
+
+  Dieser Abschnitt beschreibt die drei Anwendungen im ISOFS-Paket:
+
+şitemize
+
+şitem
+
+  şsy{ISODrive} - ein Bedienfeld, mit dem Sie ISO-Dateien und Steueroptionen
+  ein- und aush„ngen k”nnen.
+
+şitem
+ 
+  şsy{MapISO} - ein Befehlszeilenprogramm zum Ein- und Aush„ngen von ISOs,
+  das sich gut fr die Verwendung in Skripten eignet.
+
+şitem
+ 
+  şsy{isofsdmn} - ein Hintergrundprogramm (Dienst), das die eigentliche Arbeit
+  des Lesens von ISO-Dateien bernimmt.
+
+şenditemize
+
+
+şh2 Schnelleinstieg
+
+  Um auf eine ISO-Datei als Volume zuzugreifen, mssen Sie sie als Laufwerk
+  mounten und ihr einen Buchstaben zuweisen. Danach k”nnen Sie die im Image
+  enthaltenen Dateien kopieren, extrahieren oder anzeigen, als w„ren sie auf
+  Ihrer Festplatte. Wenn Sie die Nutzung des Volumes beendet haben,
+  k”nnen Sie es wieder aush„ngen. 
+
+ Das Ein- und Aush„ngen kann auf verschiedene Arten erfolgen:
+
+şdescription
+
+şitem şem{WPS}
+  Doppelklicken Sie auf die ISO-Datei. ştt{isodrive} ”ffnet einen
+  Best„tigungsdialog. Wenn Sie die Arbeit mit dem Volume abgeschlossen haben,
+  doppelklicken Sie erneut auf die Datei; diesmal erscheint eine Best„tigung
+  fr das Aush„ngen des Volumes.
+
+şitem şem{ISODrive}
+  ™ffnen Sie die Anwendung und drcken Sie die Taste ştt{[+]}. (plus).
+  Geben Sie den Dateinamen ein oder verwenden Sie den Dialog Datei ”ffnen.
+  w„hlen Sie dann einen Laufwerksbuchstaben und best„tigen Sie mittels der
+  Schaltfl„che ştt{[Mount]}. Wenn Sie die Arbeit mit dem Volume abgeschlossen
+  haben, ”ffnen Sie die Anwendung erneut, und w„hlen dann die Datei aus dem
+  Hauptverzeichnis. Klicken Sie anschlieáend auf
+  die Schaltfl„che ştt{[-]}. (minus).
+
+şitem şem{MapISO}
+  Geben Sie von einer Eingabeaufforderung (oder einem Skript) eine Zeile
+  wie diese ein:
+şexample
+  mapiso -s X: <drive>:\<path>\<filename>
+şendexample
+  Dadurch wird bei Bedarf ştt{isofsdmn} gestartet, dann wird die Datei als
+  Laufwerk X: eingebunden. Um das Volume wieder zu entfernen, verwenden Sie:
+şexample
+  mapiso X: -d
+şendexample
+
+şenddescription
+
+
+şh2 ISODrive
+
+  ştt{ISODrive} ist eine einfach zu bedienende Schnittstelle fr ISOFS.
+  Damit k”nnen Sie ISO-Dateien ein- und aush„ngen und die Popups steuern,
+  die beim Doppelklicken auf eine ISO-Datei angezeigt werden.
+
+  Das Hauptfenster enth„lt eine Liste der aktuell eingebundenen ISO-Dateien
+  mit den ihnen zugewiesenen Laufwerksbuchstaben. Darunter befinden sich
+  Schaltfl„chen zum Ein- und Aush„ngen von Laufwerken und zur Konfiguration
+  der verfgbaren Optionen.
+
+şdescription
+
+şitem Mount [ + ]
+
+  Geben Sie den Namen einer ISO-Datei ein oder drcken Sie die Schaltfl„che
+  des Datei-Dialogs (ştt{[....]}), um die Datei per Dialog zu lokalisieren.
+  W„hlen Sie dann einen Laufwerksbuchstaben und best„tigen mittels
+  ştt{[Mount]}. Wenn dies erfolgreich war, werden Dateiname und Laufwerk
+  in der Liste des Hauptfensters angezeigt.
+
+  Es gibt zwei zus„tzliche Optionen, die nur sehr wenige Benutzer ben”tigen,
+  so daá sie zun„chst nicht offenbar sind. Klicken Sie die Schaltfl„che
+  ştt{[<]}, um sie anzuzeigen
+  şbreak şem{Codepage:} Dies steuert die šbersetzung von Unicode-Dateinamen.
+  Setzen Sie es, wenn akzentuierte Zeichen in Dateinamen nicht korrekt
+  angezeigt werden.
+  şbreak şem{Offset:} kann verwendet werden, um auf eine sekund„re Sitzung
+  auf einer Multisession-CD zuzugreifen. Geben Sie den Offset in Sektoren
+  vom Anfang des Datentr„gers ein.
+
+şitem Unmount [ - ]
+
+  W„hlen Sie zun„chst das Laufwerk, das Sie aus der Liste im Hauptfenster
+  entfernen m”chten, und klicken Sie dann auf die Schaltfl„che ştt{[-]}.
+  Nachdem Sie die im Dialog angezeigten Informationen best„tigt haben,
+  klicken Sie auf ştt{[Unmount]}. Der Dateiname und das Laufwerk sollten nun
+  nicht mehr in der Liste des Hauptfensters aufgefhrt werden.
+
+  Hinweis: Normalerweise verweigert ISOFS das Aush„ngen eines Laufwerks solange
+  es offene Dateien enth„lt. Wenn Sie mittels şem{must} ein solches Laufwerk
+  auswerfen m”chten, k”nnen Sie dies mittels ştt{Emergency unmount} tun.
+  Dies entspricht der Kommandozeilenoption ştt{--force}).
+
+şitem Options
+şitemize
+şitem
+  şem{AutoMount}: Wenn Sie ISODrive einen Dateinamen, aber keinen
+  Laufwerksbuchstaben angeben (z.B. bei einem Doppelklick auf eine ISO-Datei),
+  wird diese Funktion die Datei automatisch mit dem n„chsten verfgbaren
+  Laufwerksbuchstaben einbinden. Falls diese Funktionalit„t deaktiviert ist,
+  wird stattdessen ISODrive ge”ffnet.
+
+şitem
+  şem{Confirm}: Bevor eine Datei eingebunden oder ausgehangen wird,
+  ”ffnet ISODrive ein Dialogfenster, in dem Sie die Aktion best„tigen mssen.
+
+şitem
+  şem{Advise}: Sollte der Mount-/Demontagevorgang fehlschlagen, werden Sie in
+  einem separaten Dialogfenster ber weitere Details des Fehlers informiert.
+
+şenditemize
+şenddescription
+
+  ISODrive bietet auch eine Vielzahl von Befehlszeilenschaltern an.
+  Es untersttzt alle von ştt{mapiso} verwendeten Flags
+  (siehe n„chster Abschnitt) sowie diese Extras:
+
+şdescription
+
+şitem şsy{-a, --auto}
+
+  AutoMount aktivieren; dies berschreibt Ihre Einstellung in Optionen.
+
+şitem şsy{-n, --noauto}
+ 
+  Deaktivieren Sie AutoMount; dies berschreibt Ihre Einstellung in Optionen.
+
+şenddescription
+
+
+şh2 MapISO
+
+  Das Programm ştt{mapiso} bindet eine ISO-Datei an einen Laufwerksbuchstaben.
+  Die Syntax lautet:
+
+  şsy{mapiso <option>* <drive-letter>: <path>}
+
+  The options are:
+
+şdescription
+
+şitem şsy{-o <nnnn>, --offset <nnnn>}
+
+  Geben Sie den Offset der Sitzung auf der CD an. Dies ist der Sektor, in dem
+  die Sitzung auf der CD beginnt. Fr die erste Sitzung auf einer CD ist der
+  Offset 0 und kann weggelassen werden. Diese Option ist experimentell.
+
+şitem şsy{-j <codepage>, --jcharset <codepage>}
+
+  šbersetzungscodepage fr die Unicode-Namen von Joliet CDs. Wenn dieser
+  Schalter weggelassen wird, wird die Standard-System-Codepage verwendet.
+
+şitem şsy{-s, --start}
+
+  Startet den Dienst-Prozess ştt{isofsdmn}, sofern dieser noch nicht l„uft.
+  Dieser Schalter funktioniert nur beim Einbinden eines ISO und kann nicht
+  allein verwendet werden.
+
+şitem şsy{-h, --help}
+
+  Hilfe anzeigen und beenden.
+
+şitem şsy{-v, --version}
+ 
+  Versionsinformationen ausgeben und Beenden.
+
+şenddescription
+
+  Das Programm ştt{mapiso} wird auch verwendet, um einen Laufwerksbuchstaben
+  von einer ISO-Datei zu trennen. Die Syntax lautet:
+
+şdescription
+şitem şsy{mapiso <option>* <drive-letter>: -d}
+şitem şsy{mapiso <option>* <drive-letter>: --detach}
+şenddescription
+
+  Die Optionen sind:
+
+şdescription
+
+şitem şsy{-f, --force}
+
+  Erzwingt das Trennen des eingebundenen Dateisystems, auch wenn es ge”ffnete
+  Dateien enth„lt. Dies birgt m”glicherweise Risiken von Datenverlust.
+
+şenddescription
+
+  Beispiele:
+
+şdescription
+
+şitem Einbinden des ISO auf Laufwerk X: mit der Codepage 850:
+
+şexample
+  mapiso --jcharset cp850 X: c:\directory\isoimage.raw
+şendexample
+
+şitem Einbinden einer ISO auf Laufwerk Y: mit der Standard-System-Codepage:
+
+şexample
+  mapiso y: c:\directory\another_isoimage.raw 
+şendexample
+
+şitem Die gleiche Datei auf Laufwerk Z: mit Codepage 850 einbinden:
+
+şexample
+  mapiso -j cp850 z: c:\directory\another_isoimage.raw
+şendexample
+
+şitem CD-ROM-Laufwerk S: auf Laufwerk Z: mit Codepage 850 einbinden:
+
+şexample
+  mapiso -j cp850 z: \\.\S:
+şendexample
+
+şenddescription
+
+  Sie k”nnen auf alle diese Laufwerke gleichzeitig zugreifen.
+
+
+şh2 isofsdmn
+
+  Das Programm ştt{isofsdmn} ist der Dateisystemdoemst. Die Syntax lautet:
+
+  şsy{isofsdmn <option>*}
+
+  Es wird typischerweise von ştt{ISODrive} gestartet, wenn Sie eine ISO-Datei
+  zum ersten Mal einbinden. Es kann auch durch Aufruf in der ştt{CONFIG.SYS}
+  erfolgen. Hier ben”tigen Sie entweder eine ştt{RUN}- oder
+  (şem{not} eine ştt{CALL}-Anweisung). Alternativ k”nnen Sie z.B. von einem
+  Skript mittels der ştt{detach}-Anweisung angesprochen werden.
+
+  Folgende Optionen stehen zur Verfgung:
+
+şdescription
+
+şitem şsy{-q, --quit}
+
+  Beendet den laufenden Dienst. Dadurch werden ebenso alle zugeordneten
+  Laufwerke von den zugeh”rigen ISO-Dateien getrennt.
+
+şitem şsy{--logfile <filename>}
+
+  Schreibt Protokollnachrichten in die durch şsy{<filename>} angegebene Datei.
+  Standardm„áig werden Nachrichten auf dem Standard"ger„t" ausgegeben.
+  Hierbei handelt es sich um ein Nullger„t, wenn der Dienst von ştt{CONFIG.SYS}
+  gestartet wird oder ştt{detach}) verwendet wird.
+
+şitem şsy{--loglevel <n>}
+
+  Hiermit k”nnen Sie den Schweregrad der Protokollmeldungen festlegen.
+  Nur Nachrichten mit einem Schweregrad kleiner oder gleich dem Log-Level
+  werden tats„chlich in die Logdatei geschrieben. Die Stufen sind:
+
+şdescription
+şitem 1
+  Fatal
+şitem 2
+  šbel (d.h. nicht fatal, jedoch schlimmer als ein "normaler" Fehler)
+şitem 3
+  Fehler
+şitem 4
+  Warnung
+şitem 7
+  Information
+şitem 9
+  Debug
+şenddescription
+
+şitem şsy{-h, --help}
+
+  Zeigt die Hilfe an, und beendet die Anwendung wieder.
+
+şitem şsy{-v, --version}
+ 
+  Zeigt die Version an, und beendet die Anwendung wieder.
+
+şenddescription
+
+
+şh1 ISOFS-Benachrichtigungs-Semaphor
+
+  Jedes Mal, wenn ştt{isofsdmn.exe} ein Laufwerk erfolgreich ein- oder
+  aush„ngt, versucht es, eine Ereignissemapore namens ştt{\SEM32\ISOFS MOUNT}
+  zu ”ffnen. Wenn es existiert, sendet der Dienst an die Semaphore und schlieát
+  diese dann. 
+
+  Um auf diese Benachrichtigungen zugreifen zu k”nnen, sollte der Kunde das
+  Ereignis sem erstellen, wenn es noch nicht existiert.
+  Verwenden Sie şem{not} keine Semaphoreoptionen auáer
+  dem Flag ştt{DC_SEM_SHARED}. Wenn Sem bereits existiert, ”ffnen Sie es.
+  Kunden sollten das Ereignis sem immer zurcksetzen, wenn es genutzt wurde.
+  ERROR_ALREADY_RESET Returncodes k”nnen Sie ignorieren.
+
+şh1 Building ISOFS
+
+  Die Makefiles erfordern GNU make.
+
+  Fr den Aufbau der FSD (ştt{stubfsd.ifs}) ben”tigen Sie Microsoft C 6.00.
+  şbreak Sie ben”tigen auch die FSD-Helferbibliothek und die Headerdatei,
+  die nun in diesem Paket im Verzeichnis ştt{ifsinf} enthalten sind.
+
+  Um den Daemon und die Support-Programme zu erstellen, ben”tigen Sie eine
+  aktuelle Version von gcc, die von verschiedenen Anbietern verfgbar ist.
+
+  Im Allgemeinen ist es nicht notwendig, die FSD neu zu erstellen.
+  Wenn Sie keinen Fehler finden, der behoben werden muss, k”nnen Sie die
+  vorkompilierte FSD in diesem Paket verwenden. Verwenden Sie keine frheren
+  Versionen, da diese mutmaálich noch Fehler enthalten, die mittlerweile
+  bereits behoben sind.
+
+
+şh1 šber ISOFS
+
+  Diese Software wurde von Paul Ratcliffe geschrieben.
+  Senden Sie Fehlerberichte, Patches oder andere Kommentare an
+  ştt{<paul@orac12.clara34.co56.uk78>}}. (entfernen Sie die Zahlen).
+
+  ştt{http://home.clara.net/orac/os2.htm#isofs}
+
+  Dieses Dateisystem basiert auf AEFS, einem kryptographischen Dateisystem
+  von Eelco Dolstra ştt{<edolstra@students.cs.uu.nl>}, und ISOFS 0.2.1
+  von Chris Wohlgemuth.şbreak
+  Ohne diese Arbeit w„re diese Version von ISOFS nicht m”glich gewesen!
+
+  Die Zeichensatzkonvertierung wurde aus dem cdrecord-Paket bernommen von
+  J. Schilling.
+
+  Die Routinen fr den Zugriff auf iso9660 wurden ursprnglich von
+  Eric Youngdale (1993) geschrieben, Copyright 1993 Yggdrasil Computing,
+  Incorporated.
+
+şh2 Bekannte Probleme und Einschr„nkungen
+
+şitemize
+
+şitem
+
+  Obwohl ISO-Dateien inzwischen 2 GB berschreiten k”nnen, sind einzelne
+  Dateien innerhalb dieser Dateien noch immer auf 2 GB begrenzt.
+  Dies kann sich in Zukunft „ndern.
+
+şitem
+
+  Es werden nur einzelne Session-Abbilder untersttzt. Auch das kann sich
+  in Zukunft „ndern.
+
+şitem
+
+  Derzeit ist kein Caching oder Read-Ahead implementiert, so daá
+  das Dateisystem nicht so schnell ist, wie es theoretisch sein k”nnte,
+  jedoch denke ich, es ist ziemlich flott!
+
+şenditemize
+
+
+şh2 Historie
+
+şdescription
+
+şitem V1.1.2 29 Sep 2019
+
+Untersttzungsdateien fr die deutsche und spanische Sprache hinzugefgt.şbreak
+Verbesserte Suche nach Sprachdateien durch ştt{ISODrive}.
+
+şitem V1.1.0 27 Feb 2018
+
+ ştt{ISODrive}, ein GUI-Bedienfeld fr ISOFS, hinzugefgt. Dies ersetzt
+ die 'automap.cmd' aus frheren Versionen.şbreak
+ Eine neue Funktion hinzugefgt, die es Kunden erm”glicht, eine Benachrichtigung
+ ber ISOFS zu erhalten. Mount-/Umount-Ereignisse ber ein benanntes gemeinsames
+ Ereignis-Sempahore.şbreak
+ libc-Panik behoben, die durch Versuche verursacht wurde, eine Speicherzuweisung
+ zweimal freizugeben.şbreak
+ Fehler behoben, die beim Versuch von Clients, EAs fr Dateien zu lesen,
+ die keine haben (d.h. jede Datei, die in der ISO enthalten ist).şbreak
+ Der Absturz beim Booten wurde behoben, wenn in der config.sys kein
+ Dateisystemname angegeben wurde; 'ISOFS' ist nun der Standardwert.şbreak
+ Es wurde ein Fehler behoben, der dazu fhren konnte, daá Anwendungen beim
+ Zugriff auf ein ISOFS-Laufwerk einfrohren, wenn isofsdmn.exe aus
+ der config.sys gestartet wurde.şbreak
+ šberarbeiteter und neu formatierter Code in Dateien, in denen Fehler
+ gefunden wurden.şbreak
+ Aktualisierte Makefiles und eliminierte die eigenst„ndige "getopt"-Bibliothek.
+ Diese ist jetzt Teil der libc.şbreak
+ Updates bereitgestellt von Rich Walsh.
+
+şitem V1.0.4 27 Nov 2017
+
+ Zwischenversion wurde nicht fr die ™ffentlichkeit freigegeben.
+
+şitem V1.0.3 7 Jan 2007
+
+ Der Zugriff auf Raw-Laufwerke (\\.\.\X:) in Mapiso wurde korrigiert.şbreak
+ Fehler behoben, der das Lesen ber das Ende von Dateien hinaus
+ erm”glichte.şbreak
+ Erh”hte Anzahl der Daemon-Datei-Handle, damit mehr ISO-Images gleichzeitig
+ zugeordnet werden k”nnen.şbreak
+ Dienstprogramm hinzugefgt, um ISOs automatisch anzuh„ngen und zu trennen.
+
+şitem V1.0.2 28 Jan 2006
+
+ Erm”glicht das Lesen von ISO-Images mit mehr als 2 GB.
+
+şitem V1.0.1 23 Jul 2005
+
+ Mapiso akzeptiert nun auch relative Pfadangaben, und nicht nur
+ vollqualifizierte.şbreak
+ Gr”áeres Speicherleck im Daemon behoben.şbreak
+ Fehler in der Dokumentation behoben.
+
+şitem V1.0.0 18 Dec 2004
+
+ Gr”áere Teile wurden neu geschrieben, um einen Teil des Codes zu bereinigen
+ und Untersttzung fr High Sierra-Images und ISO-9660-Images
+ ohne Joliet hinzuzufgen.şbreak
+ ISOFS wird nun von Paul Ratcliffe betreut.
+
+şitem V0.2.1 02.10.2001
+
+ Untersttzung fr Datei- und Verzeichniszeiten hinzugefgt,
+ die noch fehlte.şbreak
+ Die L”sung fr die fehlenden Notebook-Seiten wurde gefunden! OS/2 muá
+ gesagt bekommen, daá es Untersttzung fr EAs gibt, auch wenn das nicht stimmt.
+
+şitem V0.2.0 25.08.2001
+
+ Es wurde haupts„chlich ein Speicherleck und das immer noch fehlerhafte
+ erweiterte Attribut-Handling behoben.şbreak
+ Einige weitere Fehler sind behoben, die ich aber wieder vergessen habe
+ ;-).şbreak
+ Mehr beschreibende Fehlermeldungen zu ştt{mntisofs} hinzugefgt, so daá es
+ einfacher ist herauszufinden, was schief l„uft.şbreak
+ Dies scheint die erste wirklich stabile Version zu sein.
+
+şitem V0.1.5 03.10.2000
+
+ Fehlender Dateisystemtreiber zum Archiv hinzugefgt.
+
+şitem V0.1.3 30.09.2000
+
+ Es wurde ein Fehler bei der Behandlung von erweiterten Attributen behoben,
+ der zum Absturz des WPS fhrte.şbreak
+ Untersttzung fr die Volume-Bezeichnung hinzugefgt.
+
+şitem V0.1.1 20.08.2000
+
+ Erstes Release
+
+şenddescription
+
+
+şh2 Lizenz
+
+  ISOFS ist freie Software; Sie k”nnen sie unter den Bedingungen der
+  GNU General Public License, wie sie von der Free Software Foundation
+  ver”ffentlicht wurde, entweder Version 2 oder (nach Ihrer Wahl) jeder
+  sp„teren Version weitergeben und/oder modifizieren.
+
+  ISOFS wird in der Hoffnung verteilt, dass es ntzlich sein wird,
+  aber OHNE JEGLICHE GEWHRLEISTUNG; auch ohne die stillschweigende
+  Gew„hrleistung der MARKTREIFE oder Tauglichkeit fr einen bestimmten Zweck.
+  Weitere Informationen finden Sie in der GNU General Public License.
+
+  Sie sollten eine Kopie der GNU General Public License zusammen mit ISOFS
+  erhalten haben; siehe Datei COPYING. Wenn nicht, schreiben Sie an die
+  Free Software Foundation., 59 Temple Place - Suite 330, Boston, MA
+  02111-1307, USA.
+

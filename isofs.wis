@@ -21,6 +21,11 @@
     call WirexxPutEnv 'DOCDIR', docdir
     call WirexxPutEnv 'NLSDIR', nlsdir
 
+    lng = TRANSLATE(LEFT(STRIP(VALUE('LANG',,'OS2ENVIRONMENT')),2))
+    if lng <> 'DE' & lng <> 'ES' then
+        lng = 'EN'
+    call WirexxPutEnv 'LNG', lng
+
     call SysDestroyObject '<ISOFS_MAP>'
     call SysDestroyObject '<ISOFS_UNMAP>'
     call SysDestroyObject '<ISOFS_AUTOMAP>'
@@ -29,7 +34,7 @@
 
 <PCK INDEX=1
      =("GetTgtDirs")
-     PACKAGEID="Paul Ratcliffe\ISOFS\Binaries\1\1\0\0"
+     PACKAGEID="Paul Ratcliffe\ISOFS\Binaries\1\1\2\2"
      TARGET="$(BINDIR)" FIXED
      TITLE="ISOFS - Installable filesystem for ISO image files"
      SELECT
@@ -45,16 +50,16 @@
 </PCK>
 
 <PCK INDEX=2
-     PACKAGEID="Paul Ratcliffe\ISOFS\Docs\1\1\0\0"
+     PACKAGEID="Paul Ratcliffe\ISOFS\Docs\1\1\2\2"
      TARGET="$(DOCDIR)"
      TITLE="ISOFS - Documentation"
      SELECT
-     CREATEOBJECT="REPLACE WPProgram|ISOFS Help|<ISOFS_FOLDER>|EXENAME=view.exe;OBJECTID=<ISOFS_HELP>;PARAMETERS=$(DOCDIR)\isofs.inf"
+     CREATEOBJECT="REPLACE WPProgram|ISOFS Help|<ISOFS_FOLDER>|EXENAME=view.exe;OBJECTID=<ISOFS_HELP>;PARAMETERS=$(DOCDIR)\isofs_$(LNG).inf"
 >This package contains the ISOFS help files.
 </PCK>
 
 <PCK INDEX=3
-     PACKAGEID="Paul Ratcliffe\ISOFS\NLS\1\1\0\0"
+     PACKAGEID="Paul Ratcliffe\ISOFS\NLS\1\1\2\2"
      TARGET="$(NLSDIR)"
      TITLE="ISOFS - NLS Support"
      SELECT
@@ -62,7 +67,7 @@
 </PCK>
 
 <PCK INDEX=4
-     PACKAGEID="Paul Ratcliffe\ISOFS\Source\1\1\0\0"
+     PACKAGEID="Paul Ratcliffe\ISOFS\Source\1\1\2\2"
      TARGET="$(WARPIN_DEFAULTAPPSPATH)\ISOFS\Source"
      TITLE="ISOFS - Source"
 >This package contains the ISOFS installable filesystem source code.

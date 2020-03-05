@@ -1,6 +1,6 @@
 /**/
-wpistem = 'isofs110'
-filetime = '01:10:00'
+wpistem = 'isofs112'
+filetime = '01:12:04'
 wisfile = 'isofs.wis'
 packages.0 = 4
 packages.stub = ''
@@ -9,7 +9,7 @@ packages.1.dir = 'bin'
 packages.1.mask = '*.exe *.ico *.ifs'
 packages.2.id = 2
 packages.2.dir = 'bin'
-packages.2.mask = '*.inf *.txt'
+packages.2.mask = '*.inf'
 packages.3.id = 3
 packages.3.dir = 'bin'
 packages.3.mask = '*.msg'
@@ -19,7 +19,7 @@ packages.4.mask = '*'
 /**/
 call RxFuncAdd 'SysLoadFuncs', 'RexxUtil', 'SysLoadFuncs'
 call SysLoadFuncs
-parse arg reldir
+parse arg reldir .
 if reldir = '' then do
   say 'Usage: makewpi <release directory>'
   return

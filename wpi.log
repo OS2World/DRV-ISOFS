@@ -1,0 +1,45 @@
+No stub set, creating plain WPI.
+Collecting files:
+  Changing to subdir "D:\prj\isofs\bin"... OK.
+  Adding "*.exe" to package 1 recursively....
+  Adding "*.ico" to package 1 recursively
+  Adding "*.ifs" to package 1 recursively.
+  Changing to subdir "D:\prj\isofs\bin"... OK.
+  Adding "*.inf" to package 2 recursively...
+  Changing to subdir "D:\prj\isofs\bin"... OK.
+  Adding "*.msg" to package 3 recursively
+  Changing to subdir "D:\prj\isofs\source"... OK.
+  Adding "*" to package 4 recursively...........
+    Adding "daemon\*" to package 4 recursively...........................
+    Adding "driver\*" to package 4 recursively.......
+    Adding "ifsinf\*" to package 4 recursively......
+    Adding "include\*" to package 4 recursively......
+    Adding "libunls\*" to package 4 recursively...............................
+    Adding "system\*" to package 4 recursively..
+      Adding "system\os2\*" to package 4 recursively...
+      Adding "system\posix\*" to package 4 recursively...
+Script "D:\prj\isofs\source\isofs.wis" successfully read, 5387 bytes.
+Writing script to archive... OK
+Now going for package 1...
+Compressing isodrive.exe (000%)Compressing isodrive.exe (015%)Compressing isodrive.exe (031%)Compressing isodrive.exe (046%)Compressing isodrive.exe (061%)Compressing isodrive.exe (077%)Compressing isodrive.exe (092%)Compressing isodrive.exe (100%)[60C09% compression 
+Compressing isofsdmn.exe (000%)Compressing isofsdmn.exe (013%)Compressing isofsdmn.exe (026%)Compressing isofsdmn.exe (039%)Compressing isofsdmn.exe (051%)Compressing isofsdmn.exe (064%)Compressing isofsdmn.exe (077%)Compressing isofsdmn.exe (090%)Compressing isofsdmn.exe (100%)[60C14% compression 
+Compressing isoinfo.exe (000%)Compressing isoinfo.exe (014%)Compressing isoinfo.exe (027%)Compressing isoinfo.exe (041%)Compressing isoinfo.exe (055%)Compressing isoinfo.exe (068%)Compressing isoinfo.exe (082%)Compressing isoinfo.exe (095%)Compressing isoinfo.exe (100%)[60C14% compression 
+Compressing mapiso.exe (000%)Compressing mapiso.exe (016%)Compressing mapiso.exe (033%)Compressing mapiso.exe (049%)Compressing mapiso.exe (065%)Compressing mapiso.exe (081%)Compressing mapiso.exe (098%)Compressing mapiso.exe (100%)[60C10% compression 
+Compressing stubfsd.ifs (000%)Compressing stubfsd.ifs (100%)[60C56% compression 
+Now going for package 2...
+Compressing isofs_de.inf (000%)Compressing isofs_de.inf (100%)[60C39% compression 
+Compressing isofs_en.inf (000%)Compressing isofs_en.inf (100%)[60C38% compression 
+Compressing isofs_es.inf (000%)Compressing isofs_es.inf (100%)[60C39% compression 
+Now going for package 4...
+Compressing bld.log (000%)Compressing bld.log (082%)Compressing bld.log (100%)[60C88% compression 
+Compressing COPYING (000%)Compressing COPYING (100%)[60C67% compression 
+Compressing file_id.diz (000%)Compressing file_id.diz (100%)[60C20% compression 
+Compressing isofs.wis (000%)Compressing isofs.wis (100%)[60C57% compression 
+Compressing Makefile (000%)Compressing Makefile (100%)[60C51% compression 
+Compressing makefile.inc (000%)Compressing makefile.inc (100%)[60C36% compression 
+Compressing makewpi.cmd (000%)Compressing makewpi.cmd (100%)[60C58% compression 
+Compressing readme_de.src (000%)Compressing readme_de.src (100%)[60C65% compression 
+Compressing readme_en.src (000%)Compressing readme_en.src (100%)[60C64% compression 
+Compressing readme_es.src (000%)Compressing readme_es.src (100%)[60C66% compression 
+Terminating, rc = 0x3A9A (15002).
+wic: Error reading/creating archive "D:\prj\isofs\isofs112.wpi".

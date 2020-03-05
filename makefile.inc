@@ -1,4 +1,4 @@
-DISTNAME = isofs110
+DISTNAME = isofs112
 WARPINNAME = $(DISTNAME).wpi
 SYSTEM = os2
 
@@ -14,7 +14,7 @@ LDFLAGS = -s -static -Zomf -Zmap -Zno-fork -llibc_omf386
 RC = rc
 RCFLAGS = -r -n
 
-DDK = G:\ddk\base
+DDK = D:\tk\ddk\base
 CC16 = $(DDK)\tools\cl
 C16FLAGS = /c /Zp /G2s /Anlw /Onir
 C16INC = -I$(DDK)\h

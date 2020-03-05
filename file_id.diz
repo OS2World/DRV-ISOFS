@@ -1,7 +1,7 @@
-ISOFS V1.1.0 by Paul Ratcliffe, Rich Walsh, et al
-ISOFS is an installable filesystem for OS/2 for
-seamless read only access to the contents of ISO
-(CD/DVD) image files. Please uninstall previous
-versions before installing this package.
-This package is provided 'as is' under the
-GNU public licence (GPL).
+ISOFS V1.1.1 by Paul Ratcliffe, Rich Walsh, et al
+ISOFS is an installable filesystem for OS/2 for seamless
+read-only access to the contents of ISO (CD/DVD) image
+files. This version adds support for the German and Spanish
+languages. Please uninstall versions prior to v1.1.0 before
+installing this package. This package is provided 'as is'
+under the GNU public licence (GPL).

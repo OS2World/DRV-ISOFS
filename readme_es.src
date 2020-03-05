@@ -1,0 +1,542 @@
+ştitle L‚ame de ISOFS v1.1.2
+
+şif text
+şh= Öndice de materias
+ştoc
+şendif
+
+
+şh1 Introducci¢n
+
+  ISOFS es un sistema de archivos instalable para OS/2 para tener acceso
+  transparente de s¢lo lectura al contenido de archivos de imagen ISO
+  tal como se utilizan para grabar CDs de datos, o se extraen de ‚stos.
+
+  Este sistema de archivos se basa en el c¢digo fuente de AEFS, un sistema
+  de archivos criptogr fico escrito por Eelco Dolstra. Consulte la secci¢n
+  Cr‚ditos para m s informaci¢n.
+
+
+şh2 Instalaci¢n
+
+  El m‚todo recomendado es utilizar WarpIN, que modificar  su archivo
+  CONFIG.SYS y crear  una carpeta en su escritorio con objetos para la
+  documentaci¢n y las herramientas de asignaci¢n de unidades.
+
+  şem{Importante:} la v1.1.x instala sus archivos en directorios diferentes
+  a las versiones anteriores y no es capaz de eliminar los archivos
+  anteriores. Por favor, şem{desinstale} cualquier versi¢n anterior antes de
+  instalar este paquete.
+
+  Para instalar manualmente, a¤ada la siguiente l¡nea al archivo CONFIG.SYS
+  y reinicie el sistema.
+
+şexample
+  IFS=<install-path>\stubfsd.ifs ISOFS
+şendexample
+  Esta l¡nea carga el FSD (file system driver: controlador de sistema de
+  archivos), que s¢lo es testimonial y redirige las solicitudes al proceso
+  en segundo plano (ştt{isofsdmn}), que hace el aut‚ntico trabajo.
+
+  Tambi‚n puede a¤adir la siguiente l¡nea al archivo config.sys para que el
+  proceso de segundo plano cargue durante el arranque. En la mayor¡a de
+  casos, esto no es necesario puesto que ştt{isodrive} siempre lo inicia si
+  es necesario, y ştt{mapiso} lo iniciar  al solicitarlo utilizando el
+  par metro ştt{-s}.
+
+şexample
+  RUN=<directorio-de-instalaci¢n>\isofsdmn.exe
+şendexample
+
+
+şh2 Desinstalaci¢n
+
+  El m‚todo recomendado es utilizar WarpIN, que retirar  de su archivo
+  CONFIG.SYS las entradas a¤adidas durante la instalaci¢n y la carpeta
+  ISOFS del escritorio.
+
+  Para desinstalar manualmente, quite las siguientes l¡neas del archivo
+  CONFIG.SYS y reinicie el sistema.
+
+şexample
+  IFS=<directorio-de-instalaci¢n>\stubfsd.ifs ISOFS
+  RUN=<directorio-de-instalaci¢n>\isofsdmn.exe
+şendexample
+
+
+şh1 Utilizar ISOFS
+
+  Esta secci¢n describe los tres programas del paquete ISOFS:
+
+şitemize
+
+şitem
+
+  şsy{ISODrive} - un panel de control que le permite montar y desmontar
+  archivos ISO y controlar las opciones.
+
+şitem
+
+  şsy{MapISO} - un programa de indicador de mandatos para montar y desmontar
+  im genes ISO, id¢neo para su uso desde archivos de proceso por lotes.
+
+şitem
+
+  şsy{isofsdmn} - un programa que se ejecuta en segundo plano (daemon)
+  y hace el verdadero trabajo de leer de los archivos ISO.
+
+şenditemize
+
+
+şh2 Inicio r pido
+
+  Para acceder a un archivo ISO como si fuera un volumen, debe montarlo
+  como unidad asign ndole una letra. Una vez hecho eso, puede copiar,
+  extraer o ver archivos contenidos en la imagen como si estuvieran en su
+  disco duro. Cuando haya terminado de utilizar el volumen, puede
+  desmontarlo.
+
+ Se puede montar y desmontar de varias formas:
+
+şdescription
+
+şitem şem{WPS}
+  Realice una doble pulsaci¢n con el rat¢n sobre el archivo ISO.
+  ştt{isodrive} mostrar  un di logo de confirmaci¢n y lo montar . Cuando
+  haya terminado con el volumen, una nueva pulsaci¢n doble sobre el
+  archivo invocar  esta vez un di logo de confirmaci¢n para desmontarlo.
+
+şitem şem{ISODrive}
+  Abra la aplicaci¢n y pulse el bot¢n ştt{[+]} (m s). Introduzca el nombre
+  de archivo o utilice el di logo Abrir Archivo, seleccione una letra de
+  unidad y pulse ştt{[Montar]}. Cuando termine, reabra la aplicaci¢n,
+  seleccione el archivo del listado principal y pulse el bot¢n ştt{[-]}
+  (menos).
+
+şitem şem{MapISO}
+  Desde un indicador de mandatos (o archivo por lotes) introduzca una l¡nea
+  como la siguiente:
+şexample
+  mapiso -s X: <unidad>:\<v¡a de acceso>\<nombre de archivo>
+şendexample
+  Esto iniciar  ştt{isofsdmn} si es necesario y montar  el archivo como
+  unidad X:. Para desmontar el volumen, utilice:
+şexample
+  mapiso X: -d
+şendexample
+
+şenddescription
+
+
+şh2 ISODrive
+
+  ştt{ISODrive} es una interfaz f cil de utilizar para ISOFS. Con ella puede
+  montar y desmontar archivos ISO y controlar los di logos que aparecen al
+  realizar una pulsaci¢n doble sobre un archivo ISO.
+
+  La ventana principal contiene una lista de los archivos ISO montados
+  actualmente junto a las letras que se les han asignado. Debajo hay
+  botones para montar y desmontar las unidades y configurar sus opciones.
+
+şdescription
+
+şitem Montar [ + ]
+
+  Introduzca el nombre de un archivo ISO o pulse el bot¢n del di logo de
+  abrir archivo (ştt{[...]}) para buscar uno. Seleccione una letra de unidad
+  y pulse ştt{[Montar]}. Si la operaci¢n tiene ‚xito, el nombre de archivo y
+  la unidad aparecer n en el listado de la ventana principal.
+
+  Hay dos opciones adicionales disponibles que muy pocos usuarios deben
+  necesitar, as¡ que est n ocultas. Pulse el bot¢n ştt{[<]} para
+  revelarlas:şbreak
+  şem{P gina de c¢digos:} controla la traducci¢n de los nombres de
+  archivo unicode. Establ‚zcala si se muestran incorrectamente los
+  caracteres no ingleses (tildes, etc.) de los nombres de archivo.şbreak
+  şem{Posici¢n:} para acceder a una sesi¢n secundaria en un CD multisesi¢n,
+  introduzca su posici¢n en sectores desde el comienzo del disco.
+
+şitem Desmontar [ - ]
+
+  Primero, seleccione la unidad que quiera desmontar del listado de la
+  ventana principal y pulse el bot¢n ştt{[-]}. Tras confirmar la
+  informaci¢n del di logo, pulse ştt{[Desmontar]}. El nombre de archivo y
+  la unidad deber¡an desaparecer del listado de la ventana principal.
+
+  Nota: normalmente, ISOFS rehusar  desmontar una unidad si se han abierto
+  archivos en ella. Si şem{debe} desmontar una unidad en estas circunstancias,
+  marque ştt{Desmontado de emergencia} primero (es lo mismo que el par metro
+  ştt{--force} del indicador de mandatos).
+
+şitem Opciones
+şitemize
+şitem
+  şem{AutoMontado}: si suministra a ISODrive un nombre de archivo pero no
+  una letra de unidad (p.e. al hacer una pulsaci¢n doble sobre un archivo
+  ISO), esta funci¢n montar  autom ticamente el archivo utilizando la
+  siguiente letra de unidad disponible. Si est  inhabilitada, en vez de eso
+  se abrir  ISODrive.
+
+şitem
+  şem{Confirmar}: antes de montar o desmontar un archivo, ISODrive mostrar 
+  un di logo para que confirme la acci¢n.
+
+şitem
+  şem{Notificar}: en caso de que falle la operaci¢n de montar/desmontar,
+  ISODrive mostrar  un di logo notificando el error.
+
+şenditemize
+şenddescription
+
+  ISODrive tambi‚n ofrece una variedad de par metros de ejecuci¢n para
+  ajustar c¢mo opera. Soporta todos los indicadores que utiliza ştt{mapiso}
+  (consulte la siguiente secci¢n) m s ‚stos:
+
+şdescription
+
+şitem şsy{-a, --auto}
+
+  Habilitar AutoMontado; invalida lo establecido en Opciones.
+
+şitem şsy{-n, --noauto}
+
+  Inhabilitar AutoMontado; invalida lo establecido en Opciones.
+
+şenddescription
+
+
+şh2 MapISO
+
+  El programa ştt{mapiso} vincula un archivo ISO a una letra de unidad. La
+  sintaxis es:
+
+  şsy{mapiso <opci¢n>* <letra de unidad>: <v¡a de acceso>}
+
+  Las opciones son:
+
+şdescription
+
+şitem şsy{-o <nnnn>, --offset <nnnn>}
+
+  Especifica la posici¢n de la sesi¢n en el CD, es decir, el sector
+  en el que empieza la sesi¢n en el CD. Para la primera sesi¢n de un
+  CD la posici¢n es 0 y se puede omitir. Esta opci¢n es experimental.
+
+şitem şsy{-j <p gina de c¢digos>, --jcharset <p gina de c¢digos>}
+
+  P gina de c¢digos para traducir los nombres unicode de los CDs Joliet. Si
+  se omite este par metro, se utiliza la p gina de c¢digos del sistema por
+  omisi¢n.
+
+şitem şsy{-s, --start}
+
+  Inicia el proceso en segundo plano ştt{isofsdmn} si todav¡a no est  en
+  ejecuci¢n. Esta opci¢n s¢lo funciona al montar una imagen ISO - no puede
+  utilizarse por s¡ misma.
+
+şitem şsy{-h, --help}
+
+  Imprimir la ayuda y salir.
+
+şitem şsy{-v, --version}
+
+  Imprimir informaci¢n de versi¢n y salir.
+
+şenddescription
+
+  El programa ştt{mapiso} tambi‚n se utiliza para desvincular una letra de
+  unidad de un archivo ISO. La sintaxis es:
+
+şdescription
+şitem şsy{mapiso <opci¢n>* <letra de unidad>: -d}
+şitem şsy{mapiso <opci¢n>* <letra de unidad>: --detach}
+şenddescription
+
+  Las opciones son:
+
+şdescription
+
+şitem şsy{-f, --force}
+
+  Desvincular el sistema de archivos incluso habiendo archivos abiertos,
+  b£squedas activas o directorios actuales en esta unidad. Esto podr¡a no
+  ser completamente seguro.
+
+şenddescription
+
+  Ejemplos:
+
+şdescription
+
+şitem Asignar a un archivo la unidad X: con la p gina de c¢digos 850:
+
+şexample
+  mapiso --jcharset cp850 X: c:\directorio\imageniso.raw
+şendexample
+
+şitem Asignar a otro archivo la unidad Y: con la p gina de c¢digos del
+  sistema por omisi¢n:
+
+şexample
+  mapiso y: c:\directorio\otra_imageniso.raw
+şendexample
+
+şitem Montar el mismo archivo en la unidad Z: con la p gina de c¢digos 850:
+
+şexample
+  mapiso -j cp850 z: c:\directorio\otra_imageniso.raw
+şendexample
+
+şitem Montar unidad de CD-ROM S: en la unidad Z: con la p gina de c¢digos 850:
+
+şexample
+  mapiso -j cp850 z: \\.\S:
+şendexample
+
+şenddescription
+
+  Puede acceder a todas estas unidades montadas en paralelo.
+
+şh2 isofsdmn
+
+  El programa ştt{isofsdmn} es el proceso en segundo plano del sistema de
+  archivos. La sintaxis es:
+
+  şsy{isofsdmn <opci¢n>*}
+
+  T¡picamente lo inicia ştt{ISODrive} la primera vez que se monta un
+  archivo ISO. Tambi‚n se puede iniciar desde el archivo ştt{CONFIG.SYS}
+  mediante la directiva ştt{RUN} (şem{no} una directiva ştt{CALL}) o un
+  archivo de proceso por lotes con el mandato ştt{detach}.
+
+  Las opciones son:
+
+şdescription
+
+şitem şsy{-q, --quit}
+
+  Mata el proceso en segundo plano si se est  ejecutando. Tambi‚n
+  desvincular  las unidades asignadas de sus archivos ISO correspondientes.
+
+şitem şsy{--logfile <nombre de archivo>}
+
+  Escribe mensajes de registro al archivo especificado por şsy{<nombre de
+  archivo>}. Por omisi¢n, los mensajes se escriben en la salida de errores
+  est ndar (que es el dispositivo nul si el proceso en segundo plano se
+  inicia desde el archivo ştt{CONFIG.SYS} o utilizando ştt{detach}).
+
+şitem şsy{--loglevel <n>}
+
+  Establece el umbral de gravedad de los mensajes de registro. S¢lo los
+  mensajes de gravedad igual o menor que el nivel de registro se escriben
+  realmente en el archivo de registro. Los niveles son:
+
+şdescription
+şitem 1
+  Fatal
+şitem 2
+  Malo (no fatal pero peor que un error ®normal¯)
+şitem 3
+  Error
+şitem 4
+  Aviso
+şitem 7
+  Informaci¢n
+şitem 9
+  Depuraci¢n
+şenddescription
+
+şitem şsy{-h, --help}
+
+  Imprimir la ayuda y salir.
+
+şitem şsy{-v, --version}
+
+  Imprimir informaci¢n de versi¢n y salir.
+
+şenddescription
+
+
+şh1 Sem foro de notificaci¢n de ISOFS
+
+  Cada vez que ştt{isofsdmn.exe} monta o desmonta con ‚xito una unidad,
+  intenta abrir un sem foro de sucesos llamado ştt{\SEM32\ISOFS\MOUNT}. Si
+  existe, el proceso en segundo plano informa al sem foro y lo cierra.
+
+  Para acceder a estas notificaciones, un cliente deber¡a crear este
+  sem foro de sucesos si todav¡a no existe. şem{No} utilice ninguna opci¢n
+  de sem foros excepto el indicador ştt{DC_SEM_SHARED}. Si el sem foro ya
+  existe,  bralo. Los clientes siempre deber¡an reiniciar el sem foro de
+  sucesos cuando se informa e ignorar los c¢digos de retorno
+  ERROR_ALREADY_RESET.
+
+şh1 Compilar ISOFS
+
+  Los archivos ®makefile¯ necesitan el programa ®make¯ de GNU.
+
+  Para compilar el FSD (ştt{stubfsd.ifs}) necesitar  Microsoft C 6.00.şbreak
+  Tambi‚n necesita la biblioteca de apoyo para FSD y el archivo de
+  cabecera, que se incluyen ahora en este paquete en el directorio
+  ştt{ifsinf}.
+
+  Para compilar el programa de segundo plano y los programas de apoyo
+  necesita una versi¢n actual de gcc, disponible desde varias fuentes.
+
+  En general no es necesario recompilar el FSD. A no ser que encuentre un
+  fallo que haya que solucionar, puede utilizar el FSD precompilado de este
+  paquete. No utilice versiones anteriores, ya que ten¡an fallos que ya se
+  han solucionado.
+
+
+şh1 Acerca de ISOFS
+
+  Este programa ha sido escrito por Paul Ratcliffe. Env¡e informes de
+  errores, modificaciones u otros comentarios (en ingl‚s) a
+  ştt{<paul@orac12.clara34.co56.uk78>} (quite los n£meros).
+
+  ştt{http://home.clara.net/orac/os2.htm#isofs}
+
+  Este sistema de archivos est  basado en AEFS, un sistema de archivos
+  criptogr fico escrito por Eelco Dolstra ştt{<edolstra@students.cs.uu.nl>},
+  e ISOFS 0.2.1 de Chris Wohlgemuth.şbreak
+  ­Sin ese trabajo, esta versi¢n de ISOFS no habr¡a sido posible!
+
+  La conversi¢n de conjuntos de caracteres se tom¢ del paquete cdrecord de
+  J. Schilling.
+
+  Las rutinas de acceso iso9660 fueron escritas originalmente por Eric
+  Youngdale (1993), Copyright 1993 Yggdrasil Computing, Incorporated.
+
+şh2 Limitaciones y problemas conocidos
+
+şitemize
+
+şitem
+
+  Aunque ahora los archivos ISO pueden sobrepasar los 2GB de tama¤o, los
+  archivos individuales que contienen siguen limitados a 2GB. Esto puede
+  cambiar en el futuro.
+
+şitem
+
+  S¢lo se da soporte a leer im genes ISO monosesi¢n. Esto tambi‚n puede
+  cambiar en el futuro.
+
+şitem
+
+  No se han incorporado cach‚ ni lectura adelantada, as¡ que el sistema de
+  archivos no es tan r pido como ser¡a posible te¢ricamente, pero creo que
+  es razonablemente r pido.
+
+şenditemize
+
+
+şh2 Historia
+
+şdescription
+
+şitem V1.1.2 29 Sep 2019
+A¤adido soporte para los idiomas alem n y espa¤ol.şbreak
+B£squeda mejorada de archivos de idioma por ştt{ISODrive}.
+
+şitem V1.1.0 27 Feb 2018
+
+A¤adido ştt{ISODrive}, un panel de control gr fico para ISOFS. Sustituye al
+archivo ®automap.cmd¯ de versiones anteriores.şbreak
+A¤adida nueva funci¢n que permite a clientes recibir notificaciones de los
+eventos montar/desmontar de ISOFS a trav‚s de un sem foro de eventos
+compartido.şbreak
+Solucionado p nico en libc causado por intentos de liberar dos veces la
+memoria asignada.şbreak
+Solucionados fallos por intentos de los clientes de leer atributos extendidos
+de archivos que no los tienen (cualquier archivo contenido en una imagen
+ISO).şbreak
+Solucionada salida inesperada durante el inicio al no especificar un nombre
+de sistema de archivos en config.sys; ®ISOFS¯ es ahora el valor por
+omisi¢n.şbreak
+Solucionado un fallo que podr¡a colgar aplicaciones al acceder a una unidad
+ISOFS si isofsdmn.exe se hubiera iniciado desde el archivo config.sys.şbreak
+C¢digo refactorizado y reformateado en los archivos donde se encontraron
+fallos.şbreak
+Actualizados archivos Make y eliminada la biblioteca independiente ®getopt¯,
+que ahora forma parte de libc.şbreak
+
+
+Actualizaciones realizadas por Rich Walsh.
+
+şitem V1.0.4 27 Nov 2017
+
+Versi¢n intermedia no publicada.
+
+şitem V1.0.3 7 Ene 2007
+
+Arreglado acceso a im genes sin procesar (\\.\X:) en Mapiso.şbreak
+Solucionado fallo que permit¡a leer m s all  del fin de los archivos.şbreak
+Incrementada la cuenta de referencias a archivos del proceso en segundo
+plano para poder asignar m s im genes ISO simult neamente.şbreak
+A¤adida herramienta para vincular y desvincular im genes ISO
+autom ticamente.
+
+şitem V1.0.2 28 Ene 2006
+
+Permite lectura de im genes ISO mayores de 2GB.
+
+şitem V1.0.1 23 Jul 2005
+
+Mapiso ahora acepta v¡as de acceso relativas en vez de s¢lo completas.şbreak
+Solucionada importante fuga de memoria en el proceso de segundo plano.şbreak
+Solucionados errores de la documentaci¢n.
+
+şitem V1.0.0 18 Dic 2004
+
+Importante reescritura para limpiar parte del c¢digo y a¤adir soporte para
+im genes High Sierra e im genes ISO-9660 sin Joliet.şbreak
+Ahora Paul Ratcliffe mantiene ISOFS.
+
+şitem V0.2.1 02.10.2001
+
+A¤adido el soporte para horas de archivos y directorios que a£n faltaba.şbreak
+Soluci¢n para las p ginas de propiedades que faltaban. Hay que notificar a
+OS/2 de que hay soporte de atributos extendidos incluso si no es verdad.
+
+şitem V0.2.0 25.08.2001
+
+ Solucionados principalmente una fuga de memoria y el manejo de atributos extendidos.şbreak
+ Se han solucionado m s fallos que he olvidado ;-).şbreak
+ A¤adidos mensajes de error m s descriptivos a ştt{mntisofs} para que sea m s
+ f cil averiguar qu‚ va mal.şbreak
+ sta parece ser la primera versi¢n verdaderamente estable.
+
+şitem V0.1.5 03.10.2000
+
+ A¤adido al archivo el controlador de sistema de archivos que faltaba.
+
+şitem V0.1.3 30.09.2000
+
+ Arreglado manejo de atributos extendidos que hac¡a fallar al WPS.şbreak
+ A¤adido soporte para etiquetas de volumen.
+
+şitem V0.1.1 20.08.2000
+
+ Primera versi¢n
+
+şenddescription
+
+
+şh2 Licencia
+
+ISOFS es un programa libre; se puede redistribuir y/o modificar seg£n los
+t‚rminos de la Licencia P£blica General (GPL) de GNU, como la publica la
+Fundaci¢n de Software Libre FSF, bien en su versi¢n 2 o (a su discreci¢n)
+cualquiera posterior.
+
+  ISOFS se distribuye con la esperanza de que sea £til, pero SIN NINGUNA
+  GARANTÖA; ni siquiera la impl¡cita de COMERCIALIZABILIDAD o IDONEIDAD
+  PARA UN PROPàSITO CONCRETO. Consulte la Licencia P£blica General de GNU
+  para m s detalles.
+
+  Deber¡a haber recibido una copia de la Licencia P£blica General de GNU
+  junto a ISOFS; consulte el archivo COPYING (en ingl‚s). Si no, escriba a
+  Free Software Foundation, 59 Temple Place - Suite 330, Boston, MA
+  02111-1307, USA.
+

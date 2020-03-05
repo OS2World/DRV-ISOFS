@@ -644,12 +644,14 @@ ULONG   DoDetach(void)
 ULONG   DoAttach(void)
 {
     ULONG       rc;
+    BOOL        delay = FALSE;
     IFS_ATTACH  attachparms;
 
     /* start the daemon if it isn't running */
     if (!IsDaemonRunning()) {
         StartDaemon();
-        DosSleep(100);
+        delay = TRUE;
+        DosSleep(150);
     }
 
     memset(&attachparms, 0, sizeof(attachparms));
@@ -675,6 +677,12 @@ ULONG   DoAttach(void)
         DosFSAttach(szDrive, IFS_NAME, &detachparms,
                     sizeof(detachparms), FS_DETACH);
 
+        rc = DosFSAttach(szDrive, IFS_NAME, &attachparms,
+                         sizeof(attachparms), FS_ATTACH);
+    }
+    else if (rc && delay)
+    {
+        DosSleep(120);
         rc = DosFSAttach(szDrive, IFS_NAME, &attachparms,
                          sizeof(attachparms), FS_ATTACH);
     }
@@ -1508,34 +1516,44 @@ void    SaveOptions(HWND hwnd)
 
 void    InitNLS(void)
 {
-    char        *pEnv;
-    char        szLang[4];
-    char        szFile[24];
+    PPIB    ppib;
+    PTIB    ptib;
+    char    *ptr;
+    char    szLang[4];
+    char    szName[32];
+    char    szMod[CCHMAXPATH];
 
     /* default to using built-in strings */
     lNLSInit = -1;
 
     /* if there's no LANG environment variable
-     * or it looks malformed, use the default
+     * or it looks malformed, use the defaults
      */
-    if (DosScanEnv("LANG", &pEnv) ||
-        !pEnv[0] || !pEnv[1] || pEnv[2] != '_') {
-      return;
+    if (DosScanEnv("LANG", &ptr) ||
+        !ptr[0] || !ptr[1] || ptr[2] != '_') {
+        ptr = "en_US";
     }
   
-    /* extract the language code, then
-     * compose the name of the NLS file
-     */
-    memcpy(szLang, pEnv, 2);
+    /* extract the language code */
+    memcpy(szLang, ptr, 2);
     szLang[2] = 0;
     strupr(szLang);
-    sprintf(szFile, MSGFILE_FMT, szLang);
 
-    /* perform the same search that DosGetMessage() does;
-     * if the file can be found, set flag to use the msg file
-     */
-    if (!DosSearchPath(SEARCH_IGNORENETERRS | SEARCH_ENVIRONMENT | SEARCH_CUR_DIRECTORY,
-                       "DPATH", szFile, msgFile, sizeof(msgFile)))
+    /* get the exe's path */
+    DosGetInfoBlocks(&ptib, &ppib);
+    if (!DosQueryModuleName(ppib->pib_hmte, sizeof(szMod), szMod) &&
+        (ptr = strrchr(szMod, '\\')) != 0) {
+        *ptr = 0;
+        strupr(szMod);
+    }
+    else
+        szMod[0] = 0;
+
+    /* look for NLS message file; set flag if found */
+    sprintf(szName, MSGFILE_FMT, szLang);
+    if (!DosSearchPath(SEARCH_IGNORENETERRS, szMod, szName, msgFile, sizeof(msgFile)) ||
+        !DosSearchPath(SEARCH_IGNORENETERRS | SEARCH_ENVIRONMENT | SEARCH_CUR_DIRECTORY,
+                       "DPATH", szName, msgFile, sizeof(msgFile)))
         lNLSInit = 1;
 
     if (lNLSInit == -1)
@@ -1545,6 +1563,8 @@ void    InitNLS(void)
 
     return;
 }
+
+
 
 /*********************************************************************/
 

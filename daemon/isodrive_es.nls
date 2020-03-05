@@ -1,0 +1,158 @@
+;*****************************************************************************
+;*  isodrive_es.nls                                                          *
+;*                                                                           *
+;*  Copyright (C) 1999 Eelco Dolstra (edolstra@students.cs.uu.nl)            *
+;*                                                                           *
+;*  Modifications for ISOFS:                                                 *
+;*  Copyright (C) 2000 Chris Wohlgemuth (chris.wohlgemuth@cityweb.de)        *
+;*  Copyright (C) 2005-2006 Paul Ratcliffe                                   *
+;*  Copyright (C) 2017 Rich Walsh                                            *
+;*                                                                           *
+;*  This program is free software; you can redistribute it and/or modify     *
+;*  it under the terms of the GNU General Public License as published by     *
+;*  the Free Software Foundation; either version 2, or (at your option)      *
+;*  any later version.                                                       *
+;*                                                                           *
+;*  This program is distributed in the hope that it will be useful,          *
+;*  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+;*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+;*  GNU General Public License for more details.                             *
+;*                                                                           *
+;*  You should have received a copy of the GNU General Public License        *
+;*  along with this program; if not, write to the Free Software Foundation,  *
+;*  Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.           *
+;*                                                                           *
+;*****************************************************************************
+;*                                                                           *
+;*  Translator:  (Alfredo Fern ndez D¡az, mrwarper@yahoo.es)                 *
+;*        Date:  2019-09-23                                                  *
+;*                                                                           *
+;*****************************************************************************
+;
+; Notes:
+;
+;   Message numbers are normally separated from message text by one space.
+;   Do not change the number of lines assigned to a message
+;
+;*****************************************************************************
+;
+ISO
+;
+;
+; ISO_Title (do not translate)
+ISO0001I: IsoDrive
+;
+; ISO_Cancel
+ISO0002I: ~Cancelar
+;
+;
+; mount/unmount failure dialog
+;
+; ISO_MountFailure (dlg title)
+ISO0003I: ISOFS: Error al montar
+;
+; ISO_UnmountFailure (dlg title)
+ISO0004I: ISOFS: Error al desmontar
+;
+; ISO_InvalidOffset
+ISO0005I: Posici¢n no v lida.
+;
+; ISO_FileOpen
+ISO0006I: No se puede abrir el archivo imagen.
+;
+; ISO_NotIso
+ISO0007I: El archivo no es una imagen en formato ISO.
+;
+; ISO_DaemonNotRun
+ISO0008I: ISOFS: el proceso de fondo no se est  ejecutando.
+;
+; ISO_InvalidDrive
+ISO0009I: Esa letra de unidad no se utiliza.
+;
+; ISO_AlreadyAssigned
+ISO0010I: La letra de unidad ya se est  utilizando.
+;
+; ISO_InvalidParameter
+ISO0011I: Par metro inv lido.
+;
+; ISO_InvalidFsdName
+ISO0012I: Falta 'stubfsd.ifs' (comprobar config.sys).
+;
+; ISO_UnknownError
+ISO0013I: Error desconocido.
+;
+; ISO_AttachFailed
+ISO0014I: Error vinculando unidad %c: - c¢digo de retorno= %ld
+;
+; ISO_DetachFailed
+ISO0015I: Error desmontando unidad %c: - c¢digo de retorno= %ld
+;
+;
+; main dialog
+;
+; ISO_CurrentDrives
+ISO0016I: ~Unidades ISOFS actuales
+;
+; ISO_OptionsButton
+ISO0017I: ~Opciones...
+;
+;
+; mount dialog
+;
+; ISO_ConfirmMount (dlg title)
+ISO0018I: ISOFS: confirmar montar
+;
+; ISO_MountFile
+ISO0019I: Montar archivo ~ISO
+;
+; ISO_Drive
+ISO0020I: ~Unidad
+;
+; ISO_Codepage
+ISO0021I: P gina de ~c¢digos
+;
+; ISO_Offset
+ISO0022I: ~Posici¢n
+;
+; ISO_Mount
+ISO0023I: ~Montar
+;
+;
+; unmount dialog
+;
+; ISO_ConfirmUnmount (dlg title)
+ISO0024I: ISOFS: confirmar desmontar
+;
+; ISO_UnmountDrive
+ISO0025I: Desmontar unidad ?:
+;
+; ISO_UnmountInvalid
+ISO0026I: <unidad no v lida>
+;
+; ISO_EmergencyUnmount
+ISO0027I: Desmontado de ~emergencia
+;
+; ISO_Unmount
+ISO0028I: ~Desmontar
+;
+;
+; options dialog
+;
+; ISO_Options (dlg title)
+ISO0029I: Opciones
+;
+; ISO_ISOFSOptions
+ISO0030I: Opciones de ISOFS
+;
+; ISO_AutoMount
+ISO0031I: ~AutoMontado: (des)montar con doble clic
+;
+; ISO_Confirm
+ISO0032I: ~Confirmar antes de (des)montar
+;
+; ISO_Advise
+ISO0033I: ~Notificar errores al (des)montar
+;
+; ISO_Save
+ISO0034I: ~Guardar
+;
